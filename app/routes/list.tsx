@@ -2,6 +2,8 @@ import type { V2_MetaFunction } from "@remix-run/node";
 import type { LinksFunction } from "@remix-run/node";
 import { Link, Outlet, useLoaderData } from "@remix-run/react";
 import FollowingList from "~/components/following";
+import MyList from "~/components/mylist";
+import PersonIdeas from "~/components/personideas";
 
 import stylesUrl from "~/styles/index.css";
 
@@ -29,6 +31,8 @@ export default function List() {
   return (
     <div>
         <h1>This is list</h1><br/>
+        <PersonIdeas personData={{'name': 'Test User', 'ideas':[{'id': '123', 'name': 'My gift1', 'link': 'http://google.com', 'purchased': 'true'}, {'id': '234', 'name': 'Another Gift'}, {'id': '345', 'name': 'Final Gift', 'purchased': true, 'purchasedByCurrentUser': true}]}}/>
+        <MyList ideas={[{'id': '123', 'name': 'My gift1', 'link': 'http://google.com'}, {'id': '234', 'name': 'Another Gift'}]}/>
         <FollowingList findNewFollower={findNewFollower}
                         onFollowerSelected={handleFollowerSelection}
                         onDelete={handleDelete}

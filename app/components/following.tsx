@@ -56,7 +56,6 @@ const FollowingList: React.FC<FollowingListProps> = ({onDelete, onFollowerSelect
                 </Collapse>
             </CardContent>
         </Card>
-        
     )
 }
 
