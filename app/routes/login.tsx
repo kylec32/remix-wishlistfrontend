@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import type { LinksFunction } from "@remix-run/node";
 import type { ActionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
+import { useSearchParams } from '@remix-run/react';
 
 import stylesUrl from "~/styles/index.css";
 
@@ -30,11 +31,19 @@ export const action = async ({ request }: ActionArgs) => {
   };
 
 export default function Login() {
+    const [searchParams] = useSearchParams();
     return (
         <form method="post">
         <Card sx={{ minWidth: 275, width: '40%', marginLeft: 'auto', marginRight: 'auto', marginTop: '20px' }}>
             <CardHeader title="Login" />
             <CardContent>
+                <input
+                    type="hidden"
+                    name="redirectTo"
+                    value={
+                    searchParams.get("redirectTo") ?? undefined
+                    }
+                />
                 <TextField id="standard-basic" name='username' label="Email Address" variant="standard" sx={{ width: '90%', marginLeft: 'auto', marginRight: 'auto'}}/><br/><br/>
                 <TextField id="standard-basic" name='password' label="Password" variant="standard" sx={{ width: '90%', marginLeft: 'auto', marginRight: 'auto'}}/><br/>
                 <div style={{marginTop: '25px'}}>
