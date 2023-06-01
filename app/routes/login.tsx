@@ -9,7 +9,12 @@ import Typography from '@mui/material/Typography';
 import type { LinksFunction } from "@remix-run/node";
 import type { ActionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { useSearchParams } from '@remix-run/react';
+import { useSearchParams,  useActionData } from '@remix-run/react';
+
+import { db } from '~/utils/db.server';
+
+import { login, createUserSession } from '~/utils/session.server';
+import { badRequest } from '~/utils/request.server';
 
 import stylesUrl from "~/styles/index.css";
 
@@ -23,20 +28,47 @@ export const action = async ({ request }: ActionArgs) => {
     const form = await request.formData();
     const username = form.get("username");
     const password = form.get("password");
+    const redirectTo = '/list'
 
-    console.log(username);
-    console.log(password);
+    if (
+        typeof password !== "string" ||
+        typeof username !== "string"
+      ) {
+        return badRequest({
+            invalidCredentials: true,
+          });
+      }
 
-    return redirect(`/list`);
+    const userData = await login({ username, password });
+
+    console.log(userData);
+    if (userData === null) {
+        return badRequest({
+            invalidCredentials: true,
+          });
+    } else {
+        return createUserSession(userData.id, '/list');
+    }
   };
 
 export default function Login() {
+    const actionData = useActionData<typeof action>();
     const [searchParams] = useSearchParams();
     return (
         <form method="post">
         <Card sx={{ minWidth: 275, width: '40%', marginLeft: 'auto', marginRight: 'auto', marginTop: '20px' }}>
             <CardHeader title="Login" />
             <CardContent>
+            { actionData?.invalidCredentials ? (
+              <p
+                className="form-validation-error"
+                role="alert"
+                id="username-error"
+              >
+                
+            Invalid email and/or password
+              </p>
+            ) : null}
                 <input
                     type="hidden"
                     name="redirectTo"

@@ -1,4 +1,6 @@
 import type { V2_MetaFunction } from "@remix-run/node";
+import type { LoaderArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import type { LinksFunction } from "@remix-run/node";
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -11,12 +13,21 @@ import PersonIdeas from "~/components/personideas";
 
 import stylesUrl from "~/styles/index.css";
 
+import { requireUserId, getUserIdFromSession } from "~/utils/session.server";
+
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesUrl },
 ];
 
 export const meta: V2_MetaFunction = () => {
   return [{ title: "New Remix App" }];
+};
+
+export const loader = async ({ request }: LoaderArgs) => {
+  const userId = await requireUserId(request);
+  console.log('Enforced logged in user:');
+  console.log(userId);
+  return json({ hello:'stuff' });
 };
 
 export default function List() {
