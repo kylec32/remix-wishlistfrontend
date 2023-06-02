@@ -11,6 +11,8 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 
+import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
+
 import type { FollowedPerson } from '~/models/followedPerson';
 import React from 'react';
 
@@ -32,7 +34,10 @@ const FollowingList: React.FC<FollowingListProps> = ({onDelete, onFollowerSelect
         <Card sx={{ minWidth: 275, width: '40%', marginLeft: 'auto', marginRight: 'auto', marginTop: '20px' }}>
             <CardHeader title="Following" action={
                 <span>
-                <Button variant="outlined" onClick={findNewFollower}>New</Button>
+                <Form action="/add-user" method='POST'>
+                    <input type='hidden' name='userIdToFollow' value='8bf2bbb1-6149-4f9c-b27e-70363def375b'/>
+                    <Button variant="outlined" type='submit'>New</Button>
+                </Form>
                 &nbsp;
                 <a onClick={handleCollapsed}>{collapsed ? 'A' : 'B'}</a>
                 </span>

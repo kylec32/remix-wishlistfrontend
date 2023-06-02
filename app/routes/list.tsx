@@ -6,12 +6,14 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
-import { Link, Outlet, useLoaderData } from "@remix-run/react";
+import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
+import { useSubmit, useTransition } from "@remix-run/react";
 import FollowingList from "~/components/following";
 import MyList from "~/components/mylist";
 import PersonIdeas from "~/components/personideas";
 
 import stylesUrl from "~/styles/index.css";
+import { db } from '~/utils/db.server';
 
 import { requireUserId, getUserIdFromSession } from "~/utils/session.server";
 
@@ -25,13 +27,34 @@ export const meta: V2_MetaFunction = () => {
 
 export const loader = async ({ request }: LoaderArgs) => {
   const userId = await requireUserId(request);
-  console.log('Enforced logged in user:');
-  console.log(userId);
-  return json({ hello:'stuff' });
+
+  const followingUsers = await db.follows.findMany({
+    where: {
+      followerId: userId
+    },
+    include: {
+      following: {
+        select: {
+          id: true,
+          first_name: true,
+          last_name: true
+        }
+      }
+    },
+  });
+  
+  const followingUserInfo = followingUsers.map(user => {
+    return {
+      userId: user.following.id,
+      displayName: user.following.first_name + ' ' + user.following.last_name
+    }
+  });
+
+  return json({ followingUserInfo });
 };
 
 export default function List() {
-
+  const data = useLoaderData<typeof loader>();
     function handleDelete(userId: string) {
         alert('Delete Called: ' + userId)
     }
@@ -41,10 +64,10 @@ export default function List() {
     }
 
     function findNewFollower() {
-
     }
   return (
     <div>
+      
       <AppBar position="static">
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
@@ -58,7 +81,7 @@ export default function List() {
         <FollowingList findNewFollower={findNewFollower}
                         onFollowerSelected={handleFollowerSelection}
                         onDelete={handleDelete}
-                        following={[{'userId': '123', 'displayName':'Followed 1'},{'userId': '234', 'displayName':'Followed 2'},{'userId': '345', 'displayName':'Followed 3'}]}></FollowingList>
+                        following={data.followingUserInfo}></FollowingList>
       
     </div>
   );

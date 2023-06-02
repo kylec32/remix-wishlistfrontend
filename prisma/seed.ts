@@ -17,7 +17,8 @@ function testUsers() {
             first_name: 'Kyle',
             last_name: 'Carter',
             email_address: 'kylec32@gmail.com',
-            password_hash: '$2a$10$0RV66nX7sVMpVtgnOOswqeY9hfZYlG6.0.NpG7Ruboh5o3jfM.ESe'
+            password_hash: '$2a$10$0RV66nX7sVMpVtgnOOswqeY9hfZYlG6.0.NpG7Ruboh5o3jfM.ESe',
+            following: []
             
         },
         {
