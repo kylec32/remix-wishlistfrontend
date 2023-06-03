@@ -50,7 +50,68 @@ export const loader = async ({ request }: LoaderArgs) => {
     }
   });
 
-  return json({ followingUserInfo });
+
+  const followingUserIds = followingUserInfo.map(userInfo => userInfo.userId);
+
+  let followedUserGiftsInfo = await db.wishListItem.findMany({
+    where: {
+      requestingUserId: {
+        in: followingUserIds
+      }
+    },
+    include: {
+      requestingUser: {
+        select: {
+          id: true,
+          first_name: true,
+          last_name: true
+        }
+      }
+    }
+  });
+
+  const groupedData = followedUserGiftsInfo.reduce((acc, item) => {
+    const requestingUserName = item.requestingUser.first_name + " " + item.requestingUser.last_name;
+    if (!acc[requestingUserName]) {
+      acc[requestingUserName] = [];
+    }
+    acc[requestingUserName].push({
+      id: item.id,
+      name: item.name,
+      link: item.url,
+      purchased: item.purchasedById != null,
+      purchasedByCurrentUser: item.purchasedById != null && item.purchasedById === userId
+    });
+    return acc;
+  }, {});
+  const followedUserGifts = Object.entries(groupedData).map(([name, ideas]) => {
+    return { name, ideas };
+  });
+
+  console.log(followedUserGiftsInfo);
+  console.log(followedUserGifts)
+  console.log(groupedData);
+
+  const requestedGiftsRaw = await db.wishListItem.findMany({
+    where: {
+      requestingUserId: userId
+    },
+    select: {
+      id: true,
+      name: true,
+      url: true
+    }
+  });
+
+  const requesterGifts = requestedGiftsRaw.map(gift => {
+    return {
+      id: gift.id,
+      name: gift.name,
+      link: gift.url
+    }
+  });
+
+  return json({ followingUserInfo, requesterGifts, followedUserGifts });
 };
 
 export default function List() {
@@ -76,8 +137,12 @@ export default function List() {
         <Button color="inherit">Logout</Button>
       </Toolbar>
       </AppBar>
+        {data.followedUserGifts
+              .map((followedUserInfo: any) => {
+                    return (<PersonIdeas key={followedUserInfo.name} personData={followedUserInfo}/>)
+        })}
         <PersonIdeas personData={{'name': 'Test User', 'ideas':[{'id': '123', 'name': 'My gift1', 'link': 'http://google.com', 'purchased': 'true'}, {'id': '234', 'name': 'Another Gift'}, {'id': '345', 'name': 'Final Gift', 'purchased': true, 'purchasedByCurrentUser': true}]}}/>
-        <MyList ideas={[{'id': '123', 'name': 'My gift1', 'link': 'http://google.com'}, {'id': '234', 'name': 'Another Gift'}]}/>
+        <MyList ideas={data.requesterGifts}/>
         <FollowingList findNewFollower={findNewFollower}
                         onFollowerSelected={handleFollowerSelection}
                         onDelete={handleDelete}

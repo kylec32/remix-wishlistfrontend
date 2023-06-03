@@ -77,7 +77,7 @@ export default function Login() {
                     }
                 />
                 <TextField id="standard-basic" name='username' label="Email Address" variant="standard" sx={{ width: '90%', marginLeft: 'auto', marginRight: 'auto'}}/><br/><br/>
-                <TextField id="standard-basic" name='password' label="Password" variant="standard" sx={{ width: '90%', marginLeft: 'auto', marginRight: 'auto'}}/><br/>
+                <TextField id="standard-basic" name='password' label="Password" variant="standard" type="password" sx={{ width: '90%', marginLeft: 'auto', marginRight: 'auto'}}/><br/>
                 <div style={{marginTop: '25px'}}>
                     <Button variant="contained" sx={{marginRight: '10px'}} type='submit'>Login</Button>
                     <Button variant="outlined">Sign Up</Button>

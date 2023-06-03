@@ -21,6 +21,8 @@ model User {
   password_hash String
   followedBy Follows[]  @relation("follower")
   following  Follows[]  @relation("following")
+  purchasedItems WishListItem[] @relation("purchasedItems")
+  requestedItems WishListItem[] @relation("requestedItems")
 }
 
 model Follows {
@@ -30,4 +32,16 @@ model Follows {
   followingId String
 
   @@id([followerId, followingId])
+}
+
+model WishListItem {
+  id    String @id @default(uuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  name  String
+  url   String
+  requestingUser User @relation("requestedItems", fields: [requestingUserId], references: [id])
+  requestingUserId String
+  purchasedByUser User? @relation("purchasedItems", fields: [purchasedById], references: [id])
+  purchasedById String?
 }

@@ -24,7 +24,7 @@ type FollowingListProps = {
 }
 
 const FollowingList: React.FC<FollowingListProps> = ({onDelete, onFollowerSelected, findNewFollower, following}) => {
-    const [collapsed, setCollapsed] = React.useState(false)
+    const [collapsed, setCollapsed] = React.useState(true)
 
     const handleCollapsed = () => {
         setCollapsed((prev) => !prev);
@@ -34,7 +34,7 @@ const FollowingList: React.FC<FollowingListProps> = ({onDelete, onFollowerSelect
         <Card sx={{ minWidth: 275, width: '40%', marginLeft: 'auto', marginRight: 'auto', marginTop: '20px' }}>
             <CardHeader title="Following" action={
                 <span>
-                <Form action="/add-user" method='POST'>
+                <Form action="/add-user" method='POST' style={{display: 'inline'}}>
                     <input type='hidden' name='userIdToFollow' value='8bf2bbb1-6149-4f9c-b27e-70363def375b'/>
                     <Button variant="outlined" type='submit'>New</Button>
                 </Form>
@@ -51,10 +51,11 @@ const FollowingList: React.FC<FollowingListProps> = ({onDelete, onFollowerSelect
                             <ListItemText primary={followingPerson.displayName} />
                             
                         </ListItemButton>
-                        <Button onClick={(e) => {
-                                e.preventDefault(); 
-                                onDelete(followingPerson.userId);
-                            }} variant="outlined">Disconnect</Button>
+                        <Form action="/remove-user" method='POST'>
+                            <input type="hidden" name="userIdToRemove" value={followingPerson.userId}/>
+                            <Button type="submit" variant="outlined">Disconnect</Button>
+                        </Form>
+
                     </ListItem>)
                     })}
                 </List>
