@@ -23,8 +23,6 @@ export const action = async ({ request }: ActionArgs) => {
     const userIdToFollow = form.get('userIdToFollow')
     const requestUserId = await requireUserId(request);
 
-    console.log(form)
-    console.log(userIdToFollow)
     await db.follows.create({
         data: {
             followerId: requestUserId,
@@ -37,6 +35,6 @@ export const action = async ({ request }: ActionArgs) => {
 
 export default function TestPage() {
   return (
-    <h1>Hello</h1>
+    <h1></h1>
   );
 }

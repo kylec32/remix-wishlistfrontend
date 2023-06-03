@@ -16,6 +16,8 @@ import stylesUrl from "~/styles/index.css";
 import { db } from '~/utils/db.server';
 
 import { requireUserId, getUserIdFromSession } from "~/utils/session.server";
+import { getUserGifts, getGiftsForRequestedUsers } from "~/utils/gift-service.server";
+import { getUsersUserFollows } from "~/utils/following-service.server";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesUrl },
@@ -28,90 +30,15 @@ export const meta: V2_MetaFunction = () => {
 export const loader = async ({ request }: LoaderArgs) => {
   const userId = await requireUserId(request);
 
-  const followingUsers = await db.follows.findMany({
-    where: {
-      followerId: userId
-    },
-    include: {
-      following: {
-        select: {
-          id: true,
-          first_name: true,
-          last_name: true
-        }
-      }
-    },
-  });
-  
-  const followingUserInfo = followingUsers.map(user => {
-    return {
-      userId: user.following.id,
-      displayName: user.following.first_name + ' ' + user.following.last_name
-    }
-  });
+  // Following Users  
+  const followingUserInfo = await getUsersUserFollows(userId);
 
-
+  // Following User Gifts
   const followingUserIds = followingUserInfo.map(userInfo => userInfo.userId);
 
-  let followedUserGiftsInfo = await db.wishListItem.findMany({
-    where: {
-      requestingUserId: {
-        in: followingUserIds
-      }
-    },
-    include: {
-      requestingUser: {
-        select: {
-          id: true,
-          first_name: true,
-          last_name: true
-        }
-      }
-    }
-  });
+  const followedUserGifts = await getGiftsForRequestedUsers(followingUserIds, userId);
 
-  const groupedData = followedUserGiftsInfo.reduce((acc, item) => {
-    const requestingUserName = item.requestingUser.first_name + " " + item.requestingUser.last_name;
-    if (!acc[requestingUserName]) {
-      acc[requestingUserName] = [];
-    }
-    acc[requestingUserName].push({
-      id: item.id,
-      name: item.name,
-      link: item.url,
-      purchased: item.purchasedById != null,
-      purchasedByCurrentUser: item.purchasedById != null && item.purchasedById === userId
-    });
-    return acc;
-  }, {});
-  const followedUserGifts = Object.entries(groupedData).map(([name, ideas]) => {
-    return { name, ideas };
-  });
-
-  console.log(followedUserGiftsInfo);
-  console.log(followedUserGifts)
-  console.log(groupedData);
-
-  const requestedGiftsRaw = await db.wishListItem.findMany({
-    where: {
-      requestingUserId: userId
-    },
-    select: {
-      id: true,
-      name: true,
-      url: true
-    }
-  });
-
-  const requesterGifts = requestedGiftsRaw.map(gift => {
-    return {
-      id: gift.id,
-      name: gift.name,
-      link: gift.url
-    }
-  });
-
-  return json({ followingUserInfo, requesterGifts, followedUserGifts });
+  return json({ followingUserInfo, requesterGifts: await getUserGifts(userId), followedUserGifts });
 };
 
 export default function List() {
