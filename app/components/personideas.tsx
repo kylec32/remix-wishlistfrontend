@@ -1,6 +1,5 @@
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import { Collapse, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
@@ -12,6 +11,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 
 import type { FollowedPerson } from '~/models/followedPerson';
+import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
 import React from 'react';
 
 type MyListProps = {
@@ -37,11 +37,11 @@ const PersonIdeas: React.FC<MyListProps> = ({personData}) => {
 
     function getButton(idea: any) {
         if (idea.purchased && idea.purchasedByCurrentUser) {
-            return (<Button onClick={(e) => {}} variant="outlined">Mark As Not Purchased</Button>)
+            return (<Button type="submit" variant="outlined">Mark As Not Purchased</Button>)
         } else if (idea.purchased) {
-            return (<Button onClick={(e) => {}} variant="outlined" disabled={true}>Already Purchased</Button>)
+            return (<Button type="submit" variant="outlined" disabled={true}>Already Purchased</Button>)
         } else {
-            return (<Button onClick={(e) => {}} variant="outlined">Mark As Purchased</Button>)
+            return (<Button type="submit" variant="outlined">Mark As Purchased</Button>)
         }
     }
 
@@ -59,8 +59,10 @@ const PersonIdeas: React.FC<MyListProps> = ({personData}) => {
                     return (<ListItem disablePadding key={idea.id} sx={{ paddingBottom: '5px'}}>  
                         {getDisplay(idea)}   
                         <br/>
-                        {getButton(idea)}
-                        
+                        <Form method="POST" action="/mark-as-purchased">
+                            <input name="presentId" type="hidden" value={idea.id}/>
+                            {getButton(idea)}
+                        </Form>
                     </ListItem>)
                     })}
                 </List>

@@ -59,3 +59,14 @@ export async function getGiftsForRequestedUsers(userIds: string[], requestingUse
         return { name, ideas };
       });
 }
+
+export async function markPresentAsPurchased(presentId: string, purchaserUserId: string) {
+    await db.wishListItem.update({
+        where: {
+            id: presentId
+        },
+        data: {
+            purchasedById: purchaserUserId
+        }
+    });
+}

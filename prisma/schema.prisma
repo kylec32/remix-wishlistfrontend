@@ -39,7 +39,7 @@ model WishListItem {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   name  String
-  url   String
+  url   String?
   requestingUser User @relation("requestedItems", fields: [requestingUserId], references: [id])
   requestingUserId String
   purchasedByUser User? @relation("purchasedItems", fields: [purchasedById], references: [id])
