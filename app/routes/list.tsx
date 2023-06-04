@@ -68,7 +68,7 @@ export default function List() {
               .map((followedUserInfo: any) => {
                     return (<PersonIdeas key={followedUserInfo.name} personData={followedUserInfo}/>)
         })}
-        <MyList ideas={data.requesterGifts}/>
+        <MyList/>
         <FollowingList findNewFollower={findNewFollower}
                         onFollowerSelected={handleFollowerSelection}
                         onDelete={handleDelete}
