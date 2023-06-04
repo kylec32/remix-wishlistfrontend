@@ -1,4 +1,5 @@
 import { db } from '~/utils/db.server';
+import { badRequest } from './request.server';
 
 export async function getUserGifts(userId: string) {
     // Requested Gifts
@@ -61,12 +62,45 @@ export async function getGiftsForRequestedUsers(userIds: string[], requestingUse
 }
 
 export async function markPresentAsPurchased(presentId: string, purchaserUserId: string) {
-    await db.wishListItem.update({
-        where: {
-            id: presentId
-        },
-        data: {
-            purchasedById: purchaserUserId
+    try {
+        const updatedItems =  await db.wishListItem.updateMany({
+            where: {
+                id: presentId,
+                purchasedById: null
+            },
+            data: {
+                purchasedById: purchaserUserId
+            }
+        });
+    
+        console.log(`Updated ${updatedItems.count} items`)
+        if (updatedItems.count === 0) {
+            throw badRequest({message: 'Alread marked as purchased'});
         }
-    });
+    } catch(error) {
+        console.error('Error marking as purchased:', error);
+        throw badRequest({message: 'Issue marking as purchased'});
+    }
+}
+
+export async function unmarkPresentAsPurchased(presentId: string, purchaserUserId: string) {
+    try {
+        const updatedItems =  await db.wishListItem.updateMany({
+            where: {
+                id: presentId,
+                purchasedById: purchaserUserId
+            },
+            data: {
+                purchasedById: null
+            }
+        });
+    
+        console.log(`Updated ${updatedItems.count} items`)
+        if (updatedItems.count === 0) {
+            throw badRequest({message: 'Alread marked as purchased'});
+        }
+    } catch(error) {
+        console.error('Error marking as purchased:', error);
+        throw badRequest({message: 'Issue marking as purchased'});
+    }
 }

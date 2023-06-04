@@ -37,11 +37,19 @@ const PersonIdeas: React.FC<MyListProps> = ({personData}) => {
 
     function getButton(idea: any) {
         if (idea.purchased && idea.purchasedByCurrentUser) {
-            return (<Button type="submit" variant="outlined">Mark As Not Purchased</Button>)
+            return (
+                <Form method="delete" action="/present-purchased">
+                    <input name="presentId" type="hidden" value={idea.id}/>
+                    <Button type="submit" variant="outlined">Mark As Not Purchased</Button>
+                </Form>)
         } else if (idea.purchased) {
             return (<Button type="submit" variant="outlined" disabled={true}>Already Purchased</Button>)
         } else {
-            return (<Button type="submit" variant="outlined">Mark As Purchased</Button>)
+            return (
+            <Form method="POST" action="/present-purchased">
+                <input name="presentId" type="hidden" value={idea.id}/>
+                <Button type="submit" variant="outlined">Mark As Purchased</Button>
+            </Form>)
         }
     }
 
@@ -59,10 +67,7 @@ const PersonIdeas: React.FC<MyListProps> = ({personData}) => {
                     return (<ListItem disablePadding key={idea.id} sx={{ paddingBottom: '5px'}}>  
                         {getDisplay(idea)}   
                         <br/>
-                        <Form method="POST" action="/mark-as-purchased">
-                            <input name="presentId" type="hidden" value={idea.id}/>
                             {getButton(idea)}
-                        </Form>
                     </ListItem>)
                     })}
                 </List>

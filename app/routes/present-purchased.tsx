@@ -1,8 +1,7 @@
 import { redirect, V2_MetaFunction } from "@remix-run/node";
-import type { LinksFunction, ActionArgs } from "@remix-run/node";
-import { requireUserId, getUserIdFromSession } from "~/utils/session.server";
-import { db } from '~/utils/db.server';
-import { markPresentAsPurchased } from '~/utils/gift-service.server';
+import type { LinksFunction, ActionArgs, LoaderFunction } from "@remix-run/node";
+import { requireUserId } from "~/utils/session.server";
+import { markPresentAsPurchased, unmarkPresentAsPurchased } from '~/utils/gift-service.server';
 
 import stylesUrl from "~/styles/index.css";
 import { badRequest } from "~/utils/request.server";
@@ -22,13 +21,23 @@ export const action = async ({ request }: ActionArgs) => {
 
     console.log(form);
     console.log(presentId);
+    console.log(request.method);
 
     if (presentId === null) {
         throw badRequest({message: 'Please provide a presentId'})
     }
 
-    await markPresentAsPurchased(presentId.toString(), requestUserId);
+    if (request.method === 'POST') {
+        await markPresentAsPurchased(presentId.toString(), requestUserId);
+    } else if (request.method === 'DELETE') {
+        await unmarkPresentAsPurchased(presentId.toString(), requestUserId);
+    }
+    
+    return redirect('/list');
+  };
 
+  export let loader: LoaderFunction = async () => {
+    // Redirect to the desired page
     return redirect('/list');
   };
 

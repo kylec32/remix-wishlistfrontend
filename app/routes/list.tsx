@@ -68,7 +68,6 @@ export default function List() {
               .map((followedUserInfo: any) => {
                     return (<PersonIdeas key={followedUserInfo.name} personData={followedUserInfo}/>)
         })}
-        <PersonIdeas personData={{'name': 'Test User', 'ideas':[{'id': '123', 'name': 'My gift1', 'link': 'http://google.com', 'purchased': 'true'}, {'id': '234', 'name': 'Another Gift'}, {'id': '345', 'name': 'Final Gift', 'purchased': true, 'purchasedByCurrentUser': true}]}}/>
         <MyList ideas={data.requesterGifts}/>
         <FollowingList findNewFollower={findNewFollower}
                         onFollowerSelected={handleFollowerSelection}
