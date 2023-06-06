@@ -24,13 +24,29 @@ type MyListProps = {
 const MyList: React.FC<MyListProps> = ({ideas}) => {
     const [collapsed, setCollapsed] = React.useState(true)
     const [open, setOpen] = React.useState(false);
+    const [editMode, setEditMode ] = React.useState(false);
+    const [presentId, setPresentId ] = React.useState('');
+    const [presentName, setPresentName ] = React.useState('');
+    const [presentLink, setPresentLink ] = React.useState('');
 
-    const handleClickOpen = () => {
+    const handleOpenForNew = () => {
       setOpen(true);
+      setEditMode(false);
     };
+
+    const handleOpenForEdit = (idea: any) => {
+        setOpen(true);
+        setEditMode(true);
+        setPresentId(idea.id);
+        setPresentName(idea.name);
+        setPresentLink(idea.link);
+    }
   
     const handleClose = () => {
       setOpen(false);
+      setPresentId('');
+      setPresentName('');
+      setPresentLink('');
     };
 
     const handleCollapsed = () => {
@@ -51,17 +67,18 @@ const MyList: React.FC<MyListProps> = ({ideas}) => {
         <span>
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>Add Idea</DialogTitle>
-                <Form action="/add-item" method='POST' onSubmit={handleClose}>
+                <Form action={editMode ? "/edit-item" : "/add-item"} method='POST' onSubmit={handleClose}>
                     <DialogContent>
-                    
                         <TextField
                             autoFocus
                             margin="dense"
                             name="name"
                             id="name"
                             label="Name"
+                            value={presentName}
                             fullWidth
                             variant="standard"
+                            onChange={e => setPresentName(e.target.value)}
                         />
                         <TextField
                             autoFocus
@@ -70,8 +87,11 @@ const MyList: React.FC<MyListProps> = ({ideas}) => {
                             id="link"
                             label="Link (Optional)"
                             fullWidth
+                            value={presentLink}
                             variant="standard"
+                            onChange={e => setPresentLink(e.target.value)}
                         />
+                        <input name="presentId" type="hidden" value={presentId} />
                     </DialogContent>
                     <DialogActions>
                         <Button type="reset" onClick={handleClose}>Cancel</Button>
@@ -92,16 +112,19 @@ const MyList: React.FC<MyListProps> = ({ideas}) => {
                         return (<ListItem disablePadding key={idea.id} sx={{ paddingBottom: '5px'}}>
                             {getDisplay(idea)}   
                             <br/>
-                            <Button onClick={(e) => {}} variant="outlined">Edit</Button>
+                            <Button onClick={(e) => handleOpenForEdit(idea)} variant="outlined">Edit</Button>
                             &nbsp;
-                            <Button onClick={(e) => {}} variant="outlined">Remove</Button>
+                            <Form action='/delete-item' method='POST'>
+                                <input type='hidden' name='presentId' value={idea.id}/>
+                                <Button type="submit" variant="outlined">Remove</Button>
+                            </Form>
                         </ListItem>)
                         })}
                     </List>
                     </Collapse>
                 </CardContent>
                 <CardActions>
-                    <Button onClick={handleClickOpen}>Add Idea</Button>
+                    <Button onClick={handleOpenForNew}>Add Idea</Button>
                 </CardActions>
             </Card>
         </span>

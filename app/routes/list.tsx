@@ -6,16 +6,14 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
-import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
-import { useSubmit, useTransition } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 import FollowingList from "~/components/following";
 import MyList from "~/components/mylist";
 import PersonIdeas from "~/components/personideas";
 
 import stylesUrl from "~/styles/index.css";
-import { db } from '~/utils/db.server';
 
-import { requireUserId, getUserIdFromSession } from "~/utils/session.server";
+import { requireUserId } from "~/utils/session.server";
 import { getUserGifts, getGiftsForRequestedUsers } from "~/utils/gift-service.server";
 import { getUsersUserFollows } from "~/utils/following-service.server";
 
