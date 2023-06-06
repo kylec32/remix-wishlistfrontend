@@ -14,36 +14,16 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 
-import { Form, useLoaderData } from "@remix-run/react";
-import type { LoaderArgs, json } from "@remix-run/node";
+import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
 import React from 'react';
-
-import { requireUserId, getUserIdFromSession } from "~/utils/session.server";
-import { getUserGifts, getGiftsForRequestedUsers } from "~/utils/gift-service.server";
-import { getUsersUserFollows } from "~/utils/following-service.server";
 
 type MyListProps = {
     ideas: any[]
 }
 
-export const loader = async ({ request }: LoaderArgs) => {
-    const userId = await requireUserId(request);
-  
-    // Following Users  
-    const followingUserInfo = await getUsersUserFollows(userId);
-  
-    // Following User Gifts
-    const followingUserIds = followingUserInfo.map(userInfo => userInfo.userId);
-  
-    const followedUserGifts = await getGiftsForRequestedUsers(followingUserIds, userId);
-  
-    return json({ requesterGifts: await getUserGifts(userId) });
-  };
-
-const MyList = () => {
+const MyList: React.FC<MyListProps> = ({ideas}) => {
     const [collapsed, setCollapsed] = React.useState(true)
     const [open, setOpen] = React.useState(false);
-    const data = useLoaderData<typeof loader>();
 
     const handleClickOpen = () => {
       setOpen(true);
@@ -108,7 +88,7 @@ const MyList = () => {
                 <CardContent>
                     <Collapse in={collapsed}>
                     <List>
-                        {data.requesterGifts.map((idea: any) => {
+                        {ideas.map((idea: any) => {
                         return (<ListItem disablePadding key={idea.id} sx={{ paddingBottom: '5px'}}>
                             {getDisplay(idea)}   
                             <br/>
