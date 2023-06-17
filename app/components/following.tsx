@@ -12,7 +12,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 
-import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
+import { Form, useNavigation, Link, Outlet, useLoaderData } from "@remix-run/react";
 
 import type { FollowedPerson } from '~/models/followedPerson';
 import React, { ChangeEvent } from 'react';
@@ -29,6 +29,7 @@ const FollowingList: React.FC<FollowingListProps> = ({onDelete, onFollowerSelect
     const [open, setOpen] = React.useState(false);
     const [searchCriteria, setSearchCriteria] = React.useState('');
     const [searchResults, setSearchResults] = React.useState([]);
+    const navigation = useNavigation();
 
     let controller = new AbortController();
     let signal = controller.signal;
@@ -39,6 +40,8 @@ const FollowingList: React.FC<FollowingListProps> = ({onDelete, onFollowerSelect
   
     const handleClose = () => {
       setOpen(false);
+      setSearchCriteria('');
+      setSearchResults([]);
     };
 
     const handleCollapsed = () => {
@@ -54,12 +57,15 @@ const FollowingList: React.FC<FollowingListProps> = ({onDelete, onFollowerSelect
         signal = controller.signal;
         const newText = event.target.value;
         setSearchCriteria(newText);
-        console.log(newText)
+
+        if (newText === undefined || newText.length === 0) {
+            setSearchResults([]);
+            return;
+        }
 
         fetch('/user-search?filter=' + event.target.value, { signal })
         .then(response => response.json())
         .then(results => {
-            console.log(results);
             setSearchResults(results)
         });
     }
@@ -83,14 +89,15 @@ const FollowingList: React.FC<FollowingListProps> = ({onDelete, onFollowerSelect
                 <List>
                     {searchResults.map((followingUserSearchResult) => {
                     return (<ListItem disablePadding key={followingUserSearchResult.id} >
-                        <ListItemButton>
-                            <ListItemText primary={followingUserSearchResult.first_name} />
-                        </ListItemButton>
-                        {/* <Form action="/remove-user" method='POST'>
-                            <input type="hidden" name="userIdToRemove" value={followingPerson.userId}/>
-                            <Button type="submit" variant="outlined">Disconnect</Button>
-                        </Form> */}
-
+                        <Form action="/add-user" method='POST' onSubmit={handleClose}>
+                            <input type='hidden' name='userIdToFollow' value={followingUserSearchResult.id}/>
+                            {/* <button type='submit'> */}
+                            <ListItemButton type="submit" component="button" disabled={navigation.state === "submitting"}>
+                                <ListItemText primary={followingUserSearchResult.first_name + ' ' + followingUserSearchResult.last_name}
+                                            secondary={followingUserSearchResult.email_address} />
+                            </ListItemButton>
+                            {/* </button> */}
+                        </Form>
                     </ListItem>)
                     })}
                 </List>
@@ -99,13 +106,9 @@ const FollowingList: React.FC<FollowingListProps> = ({onDelete, onFollowerSelect
         <Card sx={{ minWidth: 275, width: '40%', marginLeft: 'auto', marginRight: 'auto', marginTop: '20px' }}>
             <CardHeader title="Following" action={
                 <span>
-                {/* <Form action="/add-user" method='POST' style={{display: 'inline'}}>
-                    <input type='hidden' name='userIdToFollow' value='8bf2bbb1-6149-4f9c-b27e-70363def375b'/>
-                    <Button variant="outlined" type='submit'>New</Button>
-                </Form> */}
                 <Button variant="outlined" onClick={handleClickOpen}>New</Button>
                 &nbsp;
-                <a onClick={handleCollapsed}>{collapsed ? 'A' : 'B'}</a>
+                <a onClick={handleCollapsed}><img src={collapsed ? 'chevron-down.svg' : 'chevron-up.svg'}/></a>
                 </span>
             } />
             <CardContent>
