@@ -9,6 +9,12 @@ export async function searchForUser(searchCriteria: string) {
                 {last_name: { contains: searchCriteria }},
                 {email_address: { contains: searchCriteria }},
             ]
-        }
+        },
+        select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email_address: true
+        },
     })
 }

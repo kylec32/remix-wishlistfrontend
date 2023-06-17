@@ -28,6 +28,10 @@ const FollowingList: React.FC<FollowingListProps> = ({onDelete, onFollowerSelect
     const [collapsed, setCollapsed] = React.useState(true);
     const [open, setOpen] = React.useState(false);
     const [searchCriteria, setSearchCriteria] = React.useState('');
+    const [searchResults, setSearchResults] = React.useState([]);
+
+    let controller = new AbortController();
+    let signal = controller.signal;
 
     const handleClickOpen = () => {
       setOpen(true);
@@ -42,9 +46,22 @@ const FollowingList: React.FC<FollowingListProps> = ({onDelete, onFollowerSelect
     }
 
     const updateContent = (event: ChangeEvent<HTMLInputElement>) => {
+        // Cancel the previous request, if any
+        controller.abort();
+
+        // Create a new controller and signal for the current request
+        controller = new AbortController();
+        signal = controller.signal;
         const newText = event.target.value;
         setSearchCriteria(newText);
         console.log(newText)
+
+        fetch('/user-search?filter=' + event.target.value, { signal })
+        .then(response => response.json())
+        .then(results => {
+            console.log(results);
+            setSearchResults(results)
+        });
     }
 
     return (
@@ -64,12 +81,18 @@ const FollowingList: React.FC<FollowingListProps> = ({onDelete, onFollowerSelect
                     onChange={updateContent}
                 />
                 <List>
-                    <ListItem disablePadding>
-                        User 1
-                    </ListItem>
-                    <ListItem disablePadding>
-                        User 2
-                    </ListItem>
+                    {searchResults.map((followingUserSearchResult) => {
+                    return (<ListItem disablePadding key={followingUserSearchResult.id} >
+                        <ListItemButton>
+                            <ListItemText primary={followingUserSearchResult.first_name} />
+                        </ListItemButton>
+                        {/* <Form action="/remove-user" method='POST'>
+                            <input type="hidden" name="userIdToRemove" value={followingPerson.userId}/>
+                            <Button type="submit" variant="outlined">Disconnect</Button>
+                        </Form> */}
+
+                    </ListItem>)
+                    })}
                 </List>
             </DialogContent>
         </Dialog>
