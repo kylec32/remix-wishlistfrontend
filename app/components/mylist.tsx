@@ -14,7 +14,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 
-import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
+import { Form } from "@remix-run/react";
 import React from 'react';
 
 type MyListProps = {

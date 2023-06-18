@@ -71,6 +71,10 @@ const PersonIdeas: React.FC<MyListProps> = ({personData}) => {
                     </ListItem>)
                     })}
                 </List>
+                {
+                    personData.ideas.length === 0 &&
+                    <div>This person has not put in any presents</div>
+                }
                 </Collapse>
             </CardContent>
         </Card>

@@ -6,7 +6,9 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
-import { useLoaderData } from "@remix-run/react";
+import CircularProgress from '@mui/material/CircularProgress';
+import LinearProgress from '@mui/material/LinearProgress';
+import { useLoaderData, useNavigation } from "@remix-run/react";
 import FollowingList from "~/components/following";
 import MyList from "~/components/mylist";
 import PersonIdeas from "~/components/personideas";
@@ -40,6 +42,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export default function List() {
+  const navigation = useNavigation();
   const data = useLoaderData<typeof loader>();
     function handleDelete(userId: string) {
         alert('Delete Called: ' + userId)
@@ -58,7 +61,16 @@ export default function List() {
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Wish List Sharer
-        </Typography>
+            {
+              (navigation.state === 'submitting' || navigation.state === 'loading') &&
+                <LinearProgress color="inherit" />
+            }
+            {
+              (navigation.state != 'submitting' && navigation.state != 'loading') &&
+                <div style={{lineHeight: 4 + 'px'}}>&nbsp;</div>
+            }
+            
+        </Typography>        
         <Button color="inherit">Logout</Button>
       </Toolbar>
       </AppBar>

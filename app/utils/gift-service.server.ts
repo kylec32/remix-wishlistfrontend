@@ -43,6 +43,22 @@ export async function getGiftsForRequestedUsers(userIds: string[], requestingUse
           }
         }
       });
+
+      const usersWithPresents = [...new Set(followedUserGiftsInfo.map(followerUserGiftInfo => followerUserGiftInfo.requestingUser.id))];
+
+      const userIdsWithNoPresents = userIds.filter(id => !usersWithPresents.includes(id));
+
+      const presentlessUserInfo = await db.user.findMany({
+        where: {
+          id: {
+            in: userIdsWithNoPresents
+          }
+        },
+        select: {
+          first_name: true,
+          last_name: true
+        }
+      });
     
       const groupedData = followedUserGiftsInfo.reduce((acc: { [key: string]: Array<any> }, item) => {
         const requestingUserName = item.requestingUser.first_name + " " + item.requestingUser.last_name;
@@ -59,9 +75,13 @@ export async function getGiftsForRequestedUsers(userIds: string[], requestingUse
         return acc;
       }, {});
     
-      return Object.entries(groupedData).map(([name, ideas]) => {
+      const userPresents = Object.entries(groupedData).map(([name, ideas]) => {
         return { name, ideas };
       });
+
+      presentlessUserInfo.forEach(user => userPresents.push({name: user.first_name + ' ' + user.last_name, ideas: []}));
+
+      return userPresents;
 }
 
 export async function markPresentAsPurchased(presentId: string, purchaserUserId: string) {
