@@ -43,7 +43,9 @@ export default function Index() {
       <b>Let's get started!</b>
       <br/>
       <br/>
-      <button mat-raised-button="true" >Sign Up</button>
+      <Link to='/signup'>
+        <button mat-raised-button="true" >Sign Up</button>
+      </Link>
       <br/>
       <br/>
       <Link to='/login' className="text-blue-600 underline">
