@@ -16,6 +16,7 @@ import { db } from '~/utils/db.server';
 
 import { login, createUserSession } from '~/utils/session.server';
 import { badRequest } from '~/utils/request.server';
+import { createUser } from '~/utils/user-service.server';
 
 import stylesUrl from "~/styles/index.css";
 import React, { ChangeEvent } from 'react';
@@ -24,56 +25,61 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesUrl },
 ];
 
+function isNullOrEmpty(value: FormDataEntryValue | null): boolean {
+  return value === null || value === undefined || value.length === 0
+}
+
+async function isValidCaptcha(captchaValue: FormDataEntryValue | null): Promise<boolean> {
+  const response = await fetch('https://hcaptcha.com/siteverify',
+      {method: 'POST', headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `response=${captchaValue}&secret=${process.env["HCAPTCHA_SECRET"]}`});
+
+    const responseJson = await response.json();
+
+    console.log(responseJson);
+
+    return responseJson.success;
+}
+
 export const action = async ({ request }: ActionArgs) => {
     const form = await request.formData();
 
-    console.log(form)
-    console.log(form.get('client_response'))
-    console.log(form.get('first_name'))
-    console.log(process.env["HCAPTCHA_SECRET"])
+    const firstName = form.get('first_name');
+    const lastName = form.get('last_name');
+    const emailAddress = form.get('email_address');
+    const password = form.get('password');
+    const confirmPassword = form.get('confirm_password');
+    const clientResponse = form.get("client_response")
 
-    console.log(`response=${form.get("client_response")}&secret=${process.env["HCAPTCHA_SECRET"]}`);
+    console.log(firstName)
+    console.log(lastName)
+    console.log(emailAddress)
+    console.log(password)
+    console.log(confirmPassword)
+    console.log(clientResponse);
 
-    const response = await fetch('https://hcaptcha.com/siteverify',
-    {method: 'POST', headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-    body: `response=${form.get("client_response")}&secret=${process.env["HCAPTCHA_SECRET"]}`});
-    // body: `response=${form.get("clientResponse")}&secret=0x0000000000000000000000000000000000000000`});
+    if (isNullOrEmpty(firstName) || isNullOrEmpty(lastName) || isNullOrEmpty(emailAddress) || isNullOrEmpty(password) || isNullOrEmpty(confirmPassword) || isNullOrEmpty(clientResponse)) {
+      return badRequest({
+        missingInfo: true
+      });
+    }
 
-    const responseJson = await response.json();
-    console.log(responseJson)
-    // console.log(response)
-    
+    if (await isValidCaptcha(clientResponse) == false) {
+      return badRequest({
+        incorrectCaptcha: true
+      });
+    }
 
-    // const form = await request.formData();
-    // const username = form.get("username");
-    // const password = form.get("password");
-    // const redirectTo = '/list'
+    const userId = await createUser(firstName?.toString() ?? '', lastName?.toString() ?? '', emailAddress?.toString() ?? '', password?.toString() ?? '');
 
-    // if (
-    //     typeof password !== "string" ||
-    //     typeof username !== "string"
-    //   ) {
-    //     return badRequest({
-    //         invalidCredentials: true,
-    //       });
-    //   }
-
-    // const userData = await login({ username, password });
-
-    // console.log(userData);
-    // if (userData === null) {
-    //     return badRequest({
-    //         invalidCredentials: true,
-    //       });
-    // } else {
-    //     return createUserSession(userData.id, '/list');
-    // }
+    return createUserSession(userId, '/list');
   };
 
 export default function Login() {
     const actionData = useActionData<typeof action>();
+
     const [searchParams] = useSearchParams();
     const [clientResponse, setClientResponse] = React.useState('');
     const [firstName, setFirstName] = React.useState('');
@@ -81,7 +87,6 @@ export default function Login() {
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [confirmPassword, setConfirmPassword] = React.useState('');
-    // const [isSubmitable, setIsSubmitable] = React.useState(false);
 
     function handleVerificationSuccess(token: string) {
         setClientResponse(token);
@@ -96,14 +101,25 @@ export default function Login() {
         <Card sx={{ minWidth: 275, width: '40%', marginLeft: 'auto', marginRight: 'auto', marginTop: '20px' }}>
             <CardHeader title="Sign Up" />
             <CardContent>
-            { actionData?.invalidCredentials ? (
+            { actionData?.missingInfo ? (
               <p
                 className="form-validation-error"
                 role="alert"
                 id="username-error"
               >
                 
-            Invalid email and/or password
+                Fields not filled out completely
+              </p>
+            ) : null}
+
+            { actionData?.incorrectCaptcha ? (
+              <p
+                className="form-validation-error"
+                role="alert"
+                id="username-error"
+              >
+                
+                Captcha Value Is Incorrect
               </p>
             ) : null}
                 <input
@@ -114,15 +130,17 @@ export default function Login() {
                     }
                 />
                 <input type="hidden" name="client_response" value={clientResponse}/>
-                <TextField id="standard-basic" name='first_name' value={firstName} onChange={(event) => setFirstName(event.target.value)} label="First Name" variant="standard" sx={{ width: '90%', marginLeft: 'auto', marginRight: 'auto'}}/><br/><br/>
-                <TextField id="standard-basic" name='last_name' value={lastName} onChange={(event) => setLastName(event.target.value)} label="Last Name" variant="standard" sx={{ width: '90%', marginLeft: 'auto', marginRight: 'auto'}}/><br/><br/>
-                <TextField id="standard-basic" name='email_address' value={email} onChange={(event) => setEmail(event.target.value)} label="Email Address" variant="standard" sx={{ width: '90%', marginLeft: 'auto', marginRight: 'auto'}}/><br/><br/>
-                <TextField id="standard-basic" name='password' value={password} onChange={(event) => setPassword(event.target.value)} label="Password" variant="standard" type="password" sx={{ width: '90%', marginLeft: 'auto', marginRight: 'auto'}}/><br/><br/>
-                <TextField id="standard-basic" name='confirm_password' value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} label="Confirm Password" variant="standard" type="password" sx={{ width: '90%', marginLeft: 'auto', marginRight: 'auto'}}/><br/><br/>
+                <TextField id="first-name" name='first_name' value={firstName} onChange={(event) => setFirstName(event.target.value)} label="First Name" variant="standard" sx={{ width: '90%', marginLeft: 'auto', marginRight: 'auto'}}/><br/><br/>
+                <TextField id="last-name" name='last_name' value={lastName} onChange={(event) => setLastName(event.target.value)} label="Last Name" variant="standard" sx={{ width: '90%', marginLeft: 'auto', marginRight: 'auto'}}/><br/><br/>
+                <TextField id="email-address" name='email_address' value={email} onChange={(event) => setEmail(event.target.value)} label="Email Address" variant="standard" sx={{ width: '90%', marginLeft: 'auto', marginRight: 'auto'}}/><br/><br/>
+                <TextField id="password" name='password' value={password} onChange={(event) => setPassword(event.target.value)} label="Password" variant="standard" type="password" sx={{ width: '90%', marginLeft: 'auto', marginRight: 'auto'}}/><br/><br/>
+                <TextField id="confirm-password" name='confirm_password' value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} label="Confirm Password" variant="standard" type="password" sx={{ width: '90%', marginLeft: 'auto', marginRight: 'auto'}}/><br/><br/>
                 {
                     password.length > 0 && confirmPassword.length > 0 && password !== confirmPassword &&
-                    <div>
+                    <div style={{fontSize: 12 + 'px', color: 'red'}}>
                         Passwords don't match
+                        <br/>
+                        <br/>
                     </div>
                 }
                 <HCaptcha
