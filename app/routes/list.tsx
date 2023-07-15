@@ -8,7 +8,7 @@ import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import LinearProgress from '@mui/material/LinearProgress';
-import { useLoaderData, useNavigation } from "@remix-run/react";
+import { Form, useLoaderData, useNavigation } from "@remix-run/react";
 import FollowingList from "~/components/following";
 import MyList from "~/components/mylist";
 import PersonIdeas from "~/components/personideas";
@@ -70,8 +70,10 @@ export default function List() {
                 <div style={{lineHeight: 4 + 'px'}}>&nbsp;</div>
             }
             
-        </Typography>        
-        <Button color="inherit">Logout</Button>
+        </Typography> 
+        <Form action="/logout" method="post">
+          <Button type="submit" color="inherit">Logout</Button>
+        </Form>
       </Toolbar>
       </AppBar>
         {data.followedUserGifts
