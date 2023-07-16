@@ -17,6 +17,7 @@ import { db } from '~/utils/db.server';
 import { login, createUserSession } from '~/utils/session.server';
 import { badRequest } from '~/utils/request.server';
 import { createUser } from '~/utils/user-service.server';
+import { sendTextMessage } from '~/utils/email.service.server';
 
 import stylesUrl from "~/styles/index.css";
 import React, { ChangeEvent } from 'react';
@@ -62,17 +63,21 @@ export const action = async ({ request }: ActionArgs) => {
 
     if (isNullOrEmpty(firstName) || isNullOrEmpty(lastName) || isNullOrEmpty(emailAddress) || isNullOrEmpty(password) || isNullOrEmpty(confirmPassword) || isNullOrEmpty(clientResponse)) {
       return badRequest({
-        missingInfo: true
+        missingInfo: true,
+        incorrectCaptcha: false
       });
     }
 
     if (await isValidCaptcha(clientResponse) == false) {
       return badRequest({
+        missingInfo:false,
         incorrectCaptcha: true
       });
     }
 
     const userId = await createUser(firstName?.toString() ?? '', lastName?.toString() ?? '', emailAddress?.toString() ?? '', password?.toString() ?? '');
+
+    await sendTextMessage(emailAddress?.toString() ?? '', 'Welcome to WishList Sharer', 'Welcome to WishListSharer!\n\nBe sure to invite your friends to join as well as a wish list is no fun if no one uses it.');
 
     return createUserSession(userId, '/list');
   };

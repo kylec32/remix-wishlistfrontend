@@ -107,6 +107,7 @@ const MyList: React.FC<MyListProps> = ({ideas}) => {
                 } />
                 <CardContent>
                     <Collapse in={collapsed}>
+                        {ideas.length === 0 && 'Add your first idea!'}
                     <List>
                         {ideas.map((idea: any) => {
                         return (<ListItem disablePadding key={idea.id} sx={{ paddingBottom: '5px'}}>

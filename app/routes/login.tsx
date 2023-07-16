@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import type { LinksFunction } from "@remix-run/node";
 import type { ActionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { useSearchParams,  useActionData } from '@remix-run/react';
+import { useSearchParams,  useActionData, Link } from '@remix-run/react';
 
 import { db } from '~/utils/db.server';
 
@@ -54,6 +54,11 @@ export const action = async ({ request }: ActionArgs) => {
 export default function Login() {
     const actionData = useActionData<typeof action>();
     const [searchParams] = useSearchParams();
+
+    function forgottenPassword() {
+      console.log('Forgotten password clicked');
+    }
+
     return (
         <form method="post">
         <Card sx={{ minWidth: 275, width: '40%', marginLeft: 'auto', marginRight: 'auto', marginTop: '20px' }}>
@@ -78,9 +83,14 @@ export default function Login() {
                 />
                 <TextField id="standard-basic" name='username' label="Email Address" variant="standard" sx={{ width: '90%', marginLeft: 'auto', marginRight: 'auto'}}/><br/><br/>
                 <TextField id="standard-basic" name='password' label="Password" variant="standard" type="password" sx={{ width: '90%', marginLeft: 'auto', marginRight: 'auto'}}/><br/>
+                
+                <a onClick={forgottenPassword} style={{cursor: 'pointer'}}><i>Forgotten password</i></a>
+                
                 <div style={{marginTop: '25px'}}>
                     <Button variant="contained" sx={{marginRight: '10px'}} type='submit'>Login</Button>
-                    <Button variant="outlined">Sign Up</Button>
+                    <Link to={'/signup'}>
+                      <Button variant="outlined">Sign Up</Button>
+                    </Link>
                 </div>
             </CardContent>
         </Card>

@@ -12,7 +12,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 
-import { Form, useNavigation, Link, Outlet, useLoaderData } from "@remix-run/react";
+import { Form, useNavigation } from "@remix-run/react";
 
 import type { FollowedPerson } from '~/models/followedPerson';
 import React, { ChangeEvent } from 'react';
@@ -108,11 +108,12 @@ const FollowingList: React.FC<FollowingListProps> = ({onDelete, onFollowerSelect
                 <span>
                 <Button variant="outlined" onClick={handleClickOpen}>New</Button>
                 &nbsp;
-                <a onClick={handleCollapsed}><img src={collapsed ? 'chevron-down.svg' : 'chevron-up.svg'}/></a>
+                <a onClick={handleCollapsed}><img src={collapsed ? 'chevron-up.svg' : 'chevron-down.svg'}/></a>
                 </span>
             } />
             <CardContent>
                 <Collapse in={collapsed}>
+                    { following.length ===0 && 'Wishlist Sharer is more fun when you follow people'}
                 <List>
                     {following.map((followingPerson: FollowedPerson) => {
                     return (<ListItem disablePadding key={followingPerson.userId} >
