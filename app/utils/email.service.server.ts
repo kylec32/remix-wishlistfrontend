@@ -7,7 +7,7 @@ export async function sendHtmlMessage(to: string, subject: string, htmlBody: str
             "Messages":[
               {
                 "From": {
-                  "Email": "noreply@wishlistsharer.tk",
+                  "Email": "noreply-wishlist@scaledcode.com",
                   "Name": "WishlistSharer"
                 },
                 "To": [
@@ -28,7 +28,7 @@ export async function sendTextMessage(to: string, subject: string, body: string)
             "Messages":[
               {
                 "From": {
-                  "Email": "noreply@wishlistsharer.tk",
+                  "Email": "noreply-wishlist@scaledcode.com",
                   "Name": "Wishlist Sharer"
                 },
                 "To": [
