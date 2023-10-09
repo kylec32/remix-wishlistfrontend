@@ -57,7 +57,7 @@ const PersonIdeas: React.FC<MyListProps> = ({personData}) => {
         <Card sx={{ minWidth: 275, width: '60%', marginLeft: 'auto', marginRight: 'auto', marginTop: '20px' }}>
             <CardHeader title={personData.name} action={
                 <span>
-                <a onClick={handleCollapsed}>{collapsed ? 'A' : 'B'}</a>
+                <a onClick={handleCollapsed}><img src={collapsed ? 'chevron-up.svg' : 'chevron-down.svg'}/></a>
                 </span>
             } />
             <CardContent>
@@ -71,6 +71,10 @@ const PersonIdeas: React.FC<MyListProps> = ({personData}) => {
                     </ListItem>)
                     })}
                 </List>
+                {
+                    personData.ideas.length === 0 &&
+                    <div>This person has not shared any presents</div>
+                }
                 </Collapse>
             </CardContent>
         </Card>

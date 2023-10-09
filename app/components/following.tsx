@@ -12,7 +12,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 
-import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
+import { Form, useNavigation } from "@remix-run/react";
 
 import type { FollowedPerson } from '~/models/followedPerson';
 import React, { ChangeEvent } from 'react';
@@ -28,6 +28,11 @@ const FollowingList: React.FC<FollowingListProps> = ({onDelete, onFollowerSelect
     const [collapsed, setCollapsed] = React.useState(true);
     const [open, setOpen] = React.useState(false);
     const [searchCriteria, setSearchCriteria] = React.useState('');
+    const [searchResults, setSearchResults] = React.useState([]);
+    const navigation = useNavigation();
+
+    let controller = new AbortController();
+    let signal = controller.signal;
 
     const handleClickOpen = () => {
       setOpen(true);
@@ -35,6 +40,8 @@ const FollowingList: React.FC<FollowingListProps> = ({onDelete, onFollowerSelect
   
     const handleClose = () => {
       setOpen(false);
+      setSearchCriteria('');
+      setSearchResults([]);
     };
 
     const handleCollapsed = () => {
@@ -42,9 +49,25 @@ const FollowingList: React.FC<FollowingListProps> = ({onDelete, onFollowerSelect
     }
 
     const updateContent = (event: ChangeEvent<HTMLInputElement>) => {
+        // Cancel the previous request, if any
+        controller.abort();
+
+        // Create a new controller and signal for the current request
+        controller = new AbortController();
+        signal = controller.signal;
         const newText = event.target.value;
         setSearchCriteria(newText);
-        console.log(newText)
+
+        if (newText === undefined || newText.length === 0) {
+            setSearchResults([]);
+            return;
+        }
+
+        fetch('/user-search?filter=' + event.target.value, { signal })
+        .then(response => response.json())
+        .then(results => {
+            setSearchResults(results)
+        });
     }
 
     return (
@@ -64,29 +87,33 @@ const FollowingList: React.FC<FollowingListProps> = ({onDelete, onFollowerSelect
                     onChange={updateContent}
                 />
                 <List>
-                    <ListItem disablePadding>
-                        User 1
-                    </ListItem>
-                    <ListItem disablePadding>
-                        User 2
-                    </ListItem>
+                    {searchResults.map((followingUserSearchResult) => {
+                    return (<ListItem disablePadding key={followingUserSearchResult.id} >
+                        <Form action="/add-user" method='POST' onSubmit={handleClose}>
+                            <input type='hidden' name='userIdToFollow' value={followingUserSearchResult.id}/>
+                            {/* <button type='submit'> */}
+                            <ListItemButton type="submit" component="button" disabled={navigation.state === "submitting"}>
+                                <ListItemText primary={followingUserSearchResult.first_name + ' ' + followingUserSearchResult.last_name}
+                                            secondary={followingUserSearchResult.email_address} />
+                            </ListItemButton>
+                            {/* </button> */}
+                        </Form>
+                    </ListItem>)
+                    })}
                 </List>
             </DialogContent>
         </Dialog>
         <Card sx={{ minWidth: 275, width: '40%', marginLeft: 'auto', marginRight: 'auto', marginTop: '20px' }}>
             <CardHeader title="Following" action={
                 <span>
-                {/* <Form action="/add-user" method='POST' style={{display: 'inline'}}>
-                    <input type='hidden' name='userIdToFollow' value='8bf2bbb1-6149-4f9c-b27e-70363def375b'/>
-                    <Button variant="outlined" type='submit'>New</Button>
-                </Form> */}
                 <Button variant="outlined" onClick={handleClickOpen}>New</Button>
                 &nbsp;
-                <a onClick={handleCollapsed}>{collapsed ? 'A' : 'B'}</a>
+                <a onClick={handleCollapsed}><img src={collapsed ? 'chevron-up.svg' : 'chevron-down.svg'}/></a>
                 </span>
             } />
             <CardContent>
                 <Collapse in={collapsed}>
+                    { following.length ===0 && 'Wishlist Sharer is more fun when you follow people'}
                 <List>
                     {following.map((followingPerson: FollowedPerson) => {
                     return (<ListItem disablePadding key={followingPerson.userId} >

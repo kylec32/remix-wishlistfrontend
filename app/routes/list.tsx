@@ -6,16 +6,16 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
-import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
-import { useSubmit, useTransition } from "@remix-run/react";
+import CircularProgress from '@mui/material/CircularProgress';
+import LinearProgress from '@mui/material/LinearProgress';
+import { Form, useLoaderData, useNavigation } from "@remix-run/react";
 import FollowingList from "~/components/following";
 import MyList from "~/components/mylist";
 import PersonIdeas from "~/components/personideas";
 
 import stylesUrl from "~/styles/index.css";
-import { db } from '~/utils/db.server';
 
-import { requireUserId, getUserIdFromSession } from "~/utils/session.server";
+import { requireUserId } from "~/utils/session.server";
 import { getUserGifts, getGiftsForRequestedUsers } from "~/utils/gift-service.server";
 import { getUsersUserFollows } from "~/utils/following-service.server";
 
@@ -42,6 +42,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export default function List() {
+  const navigation = useNavigation();
   const data = useLoaderData<typeof loader>();
     function handleDelete(userId: string) {
         alert('Delete Called: ' + userId)
@@ -60,15 +61,26 @@ export default function List() {
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Wish List Sharer
-        </Typography>
-        <Button color="inherit">Logout</Button>
+            {
+              (navigation.state === 'submitting' || navigation.state === 'loading') &&
+                <LinearProgress color="inherit" />
+            }
+            {
+              (navigation.state != 'submitting' && navigation.state != 'loading') &&
+                <div style={{lineHeight: 4 + 'px'}}>&nbsp;</div>
+            }
+            
+        </Typography> 
+        <Form action="/logout" method="post">
+          <Button type="submit" color="inherit">Logout</Button>
+        </Form>
       </Toolbar>
       </AppBar>
         {data.followedUserGifts
               .map((followedUserInfo: any) => {
                     return (<PersonIdeas key={followedUserInfo.name} personData={followedUserInfo}/>)
         })}
-        <MyList/>
+        <MyList ideas={data.requesterGifts}/>
         <FollowingList findNewFollower={findNewFollower}
                         onFollowerSelected={handleFollowerSelection}
                         onDelete={handleDelete}

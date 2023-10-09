@@ -14,43 +14,39 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 
-import { Form, useLoaderData } from "@remix-run/react";
-import type { LoaderArgs, json } from "@remix-run/node";
+import { Form } from "@remix-run/react";
 import React from 'react';
-
-import { requireUserId, getUserIdFromSession } from "~/utils/session.server";
-import { getUserGifts, getGiftsForRequestedUsers } from "~/utils/gift-service.server";
-import { getUsersUserFollows } from "~/utils/following-service.server";
 
 type MyListProps = {
     ideas: any[]
 }
 
-export const loader = async ({ request }: LoaderArgs) => {
-    const userId = await requireUserId(request);
-  
-    // Following Users  
-    const followingUserInfo = await getUsersUserFollows(userId);
-  
-    // Following User Gifts
-    const followingUserIds = followingUserInfo.map(userInfo => userInfo.userId);
-  
-    const followedUserGifts = await getGiftsForRequestedUsers(followingUserIds, userId);
-  
-    return json({ requesterGifts: await getUserGifts(userId) });
-  };
-
-const MyList = () => {
+const MyList: React.FC<MyListProps> = ({ideas}) => {
     const [collapsed, setCollapsed] = React.useState(true)
     const [open, setOpen] = React.useState(false);
-    const data = useLoaderData<typeof loader>();
+    const [editMode, setEditMode ] = React.useState(false);
+    const [presentId, setPresentId ] = React.useState('');
+    const [presentName, setPresentName ] = React.useState('');
+    const [presentLink, setPresentLink ] = React.useState('');
 
-    const handleClickOpen = () => {
+    const handleOpenForNew = () => {
       setOpen(true);
+      setEditMode(false);
     };
+
+    const handleOpenForEdit = (idea: any) => {
+        setOpen(true);
+        setEditMode(true);
+        setPresentId(idea.id);
+        setPresentName(idea.name);
+        setPresentLink(idea.link);
+    }
   
     const handleClose = () => {
       setOpen(false);
+      setPresentId('');
+      setPresentName('');
+      setPresentLink('');
     };
 
     const handleCollapsed = () => {
@@ -71,17 +67,18 @@ const MyList = () => {
         <span>
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>Add Idea</DialogTitle>
-                <Form action="/add-item" method='POST' onSubmit={handleClose}>
+                <Form action={editMode ? "/edit-item" : "/add-item"} method='POST' onSubmit={handleClose}>
                     <DialogContent>
-                    
                         <TextField
                             autoFocus
                             margin="dense"
                             name="name"
                             id="name"
                             label="Name"
+                            value={presentName}
                             fullWidth
                             variant="standard"
+                            onChange={e => setPresentName(e.target.value)}
                         />
                         <TextField
                             autoFocus
@@ -90,8 +87,11 @@ const MyList = () => {
                             id="link"
                             label="Link (Optional)"
                             fullWidth
+                            value={presentLink}
                             variant="standard"
+                            onChange={e => setPresentLink(e.target.value)}
                         />
+                        <input name="presentId" type="hidden" value={presentId} />
                     </DialogContent>
                     <DialogActions>
                         <Button type="reset" onClick={handleClose}>Cancel</Button>
@@ -102,26 +102,30 @@ const MyList = () => {
             <Card sx={{ minWidth: 275, width: '40%', marginLeft: 'auto', marginRight: 'auto', marginTop: '20px' }}>
                 <CardHeader title="My List" action={
                     <span>
-                    <a onClick={handleCollapsed}>{collapsed ? 'A' : 'B'}</a>
+                    <a onClick={handleCollapsed}><img src={collapsed ? 'chevron-up.svg' : 'chevron-down.svg'}/></a>
                     </span>
                 } />
                 <CardContent>
                     <Collapse in={collapsed}>
+                        {ideas.length === 0 && 'Add your first idea!'}
                     <List>
-                        {data.requesterGifts.map((idea: any) => {
+                        {ideas.map((idea: any) => {
                         return (<ListItem disablePadding key={idea.id} sx={{ paddingBottom: '5px'}}>
                             {getDisplay(idea)}   
                             <br/>
-                            <Button onClick={(e) => {}} variant="outlined">Edit</Button>
+                            <Button onClick={(e) => handleOpenForEdit(idea)} variant="outlined">Edit</Button>
                             &nbsp;
-                            <Button onClick={(e) => {}} variant="outlined">Remove</Button>
+                            <Form action='/delete-item' method='POST'>
+                                <input type='hidden' name='presentId' value={idea.id}/>
+                                <Button type="submit" variant="outlined">Remove</Button>
+                            </Form>
                         </ListItem>)
                         })}
                     </List>
                     </Collapse>
                 </CardContent>
                 <CardActions>
-                    <Button onClick={handleClickOpen}>Add Idea</Button>
+                    <Button onClick={handleOpenForNew}>Add Idea</Button>
                 </CardActions>
             </Card>
         </span>
