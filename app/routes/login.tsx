@@ -1,20 +1,14 @@
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import { TextField } from '@mui/material';
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
 import Snackbar from '@mui/material/Snackbar';
 import Alert, { AlertColor } from '@mui/material/Alert';
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import type { LinksFunction } from "@remix-run/node";
 import type { ActionArgs } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
+import { useNavigation, Form } from "@remix-run/react";
 import { useSearchParams,  useActionData, Link } from '@remix-run/react';
-
-import { db } from '~/utils/db.server';
 
 import { login, createUserSession } from '~/utils/session.server';
 import { badRequest } from '~/utils/request.server';
@@ -26,8 +20,6 @@ import stylesUrl from "~/styles/index.css";
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesUrl },
 ];
-
-
 
 export const action = async ({ request }: ActionArgs) => {
     const form = await request.formData();
@@ -63,6 +55,7 @@ export default function Login() {
     const [alertOpen, setAlertOpen] = React.useState(false);
     const [alertMessage, setAlertMessage] = React.useState('');
     const [alertSeverity, setAlertSeverity] = React.useState<AlertColor>('success');
+    const navigation = useNavigation();
 
     function forgottenPassword() {
       if (emailAddress.length == 0) {
@@ -100,7 +93,7 @@ export default function Login() {
           {alertMessage}
         </Alert>
       </Snackbar>
-        <form method="post">
+        <Form method="post">
         <Card sx={{ minWidth: 275, width: '40%', marginLeft: 'auto', marginRight: 'auto', marginTop: '20px' }}>
             <CardHeader title="Login" />
             <CardContent>
@@ -127,14 +120,14 @@ export default function Login() {
                 <a onClick={forgottenPassword} style={{cursor: 'pointer'}}><i>Forgotten password</i></a>
                 
                 <div style={{marginTop: '25px'}}>
-                    <Button variant="contained" sx={{marginRight: '10px'}} type='submit'>Login</Button>
+                    <Button variant="contained" sx={{marginRight: '10px'}} type='submit' disabled={navigation.state === "loading"}>Login</Button>
                     <Link to={'/signup'}>
                       <Button variant="outlined">Sign Up</Button>
                     </Link>
                 </div>
             </CardContent>
         </Card>
-        </form>
+        </Form>
         </div>
     )
 }

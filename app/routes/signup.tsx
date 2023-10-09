@@ -20,7 +20,7 @@ import { createUser } from '~/utils/user-service.server';
 import { sendTextMessage } from '~/utils/email.service.server';
 
 import stylesUrl from "~/styles/index.css";
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, useEffect } from 'react';
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesUrl },
@@ -31,17 +31,36 @@ function isNullOrEmpty(value: FormDataEntryValue | null): boolean {
 }
 
 async function isValidCaptcha(captchaValue: FormDataEntryValue | null): Promise<boolean> {
-  const response = await fetch('https://hcaptcha.com/siteverify',
-      {method: 'POST', headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: `response=${captchaValue}&secret=${process.env["HCAPTCHA_SECRET"]}`});
+  
+  // console.log("Secret value: " + process.env["HCAPTCHA_SECRET"])
+  // const response = await fetch('https://hcaptcha.com/siteverify',
+  //     {method: 'POST', headers: {
+  //       'Content-Type': 'application/x-www-form-urlencoded'
+  //     },
+  //     body: `response=${captchaValue}&secret=${process.env["HCAPTCHA_SECRET"]}`});
 
-    const responseJson = await response.json();
+  //   const responseJson = await response.json();
 
-    console.log(responseJson);
+  //   console.log(responseJson);
 
-    return responseJson.success;
+  //   return responseJson.success;
+  const formData = new FormData();
+  formData.append('secret', process.env["TURNSTILE_SECRET"]);
+  formData.append('response', captchaValue?.toString());
+
+  console.log("Send it!")
+  const initialResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+    method: 'POST',
+    body: formData, // Pass the FormData object as the request body
+  });
+
+  const jsonResponse = await initialResponse.json();
+
+
+  console.log("Result:");
+  console.log(jsonResponse)
+
+  return jsonResponse.success;
 }
 
 export const action = async ({ request }: ActionArgs) => {
@@ -52,23 +71,25 @@ export const action = async ({ request }: ActionArgs) => {
     const emailAddress = form.get('email_address');
     const password = form.get('password');
     const confirmPassword = form.get('confirm_password');
-    const clientResponse = form.get("client_response")
+    // const clientResponse = form.get("client_response")
+    const turnstileResponse = form.get('cf-turnstile-response');
 
     console.log(firstName)
     console.log(lastName)
     console.log(emailAddress)
     console.log(password)
     console.log(confirmPassword)
-    console.log(clientResponse);
+    // console.log(clientResponse);
+    console.log(turnstileResponse)
 
-    if (isNullOrEmpty(firstName) || isNullOrEmpty(lastName) || isNullOrEmpty(emailAddress) || isNullOrEmpty(password) || isNullOrEmpty(confirmPassword) || isNullOrEmpty(clientResponse)) {
-      return badRequest({
-        missingInfo: true,
-        incorrectCaptcha: false
-      });
-    }
+    // if (isNullOrEmpty(firstName) || isNullOrEmpty(lastName) || isNullOrEmpty(emailAddress) || isNullOrEmpty(password) || isNullOrEmpty(confirmPassword) || isNullOrEmpty(clientResponse)) {
+    //   return badRequest({
+    //     missingInfo: true,
+    //     incorrectCaptcha: false
+    //   });
+    // }
 
-    if (await isValidCaptcha(clientResponse) == false) {
+    if (await isValidCaptcha(turnstileResponse) == false) {
       return badRequest({
         missingInfo:false,
         incorrectCaptcha: true
@@ -98,8 +119,22 @@ export default function Login() {
     }
 
     function isSubmitable() {
-        return firstName.length > 0 && lastName.length > 0 && email.length > 0 && password.length > 0 && password === confirmPassword;
+        //return firstName.length > 0 && lastName.length > 0 && email.length > 0 && password.length > 0 && password === confirmPassword;
+        return true;
     }
+
+    useEffect(() => {
+      // Your JavaScript code to execute when the page loads on the client side
+      console.log("Page loaded on the client side!");
+      turnstile.render('#turnstileElement', {
+        sitekey: '0x4AAAAAAALWDmavHg-cZ360',
+        callback: function(token) {
+            console.log(`Challenge Success ${token}`);
+        },
+    });
+      
+      // You can add any other client-side code here
+    }, []);
 
     return (
         <form method="post">
@@ -148,10 +183,12 @@ export default function Login() {
                         <br/>
                     </div>
                 }
-                <HCaptcha
+
+                {/* <HCaptcha
                 sitekey="02e7de08-73fc-4463-a9ce-ea7e0371f043"
                 onVerify={(token,ekey) => handleVerificationSuccess(token)}
-                />
+                /> */}
+                <div id="turnstileElement" className="cf-turnstile" data-sitekey="0x4AAAAAAALWDmavHg-cZ360"></div>
                 <div style={{marginTop: '25px'}}>
                     <Button variant="outlined" sx={{marginRight: '10px'}}>Back to Login</Button>
                     <Button variant="contained" type='submit' disabled={!isSubmitable()}>Sign Up</Button>

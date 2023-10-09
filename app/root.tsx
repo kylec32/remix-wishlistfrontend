@@ -7,6 +7,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useMatches
 } from "@remix-run/react";
 
 export const links: LinksFunction = () => [
@@ -14,6 +15,8 @@ export const links: LinksFunction = () => [
 ];
 
 export default function App() {
+  const matches = useMatches()
+  const isOnSignup = matches.find(m => m.pathname.indexOf("/signup") !== -1)
   return (
     <html lang="en">
       <head>
@@ -26,6 +29,8 @@ export default function App() {
         <Outlet />
         <ScrollRestoration />
         <Scripts />
+        {/* Look into remix-utils ExternalScripts */}
+        {isOnSignup && <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>}
         <LiveReload />
       </body>
     </html>
