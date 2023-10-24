@@ -85,7 +85,7 @@ export default function Login() {
 
     return (
       <div>
-      <Snackbar open={alertOpen} autoHideDuration={5000} onClose={alertClose} anchorOrigin={{
+      <Snackbar open={alertOpen} autoHideDuration={3000} onClose={alertClose} anchorOrigin={{
         vertical: 'top',
         horizontal: 'center'
       }}>

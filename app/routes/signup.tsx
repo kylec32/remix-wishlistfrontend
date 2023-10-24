@@ -1,18 +1,11 @@
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import { TextField } from '@mui/material';
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
 import type { LinksFunction } from "@remix-run/node";
 import type { ActionArgs } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
 import { useSearchParams,  useActionData } from '@remix-run/react';
-import HCaptcha from '@hcaptcha/react-hcaptcha';
-
-import { db } from '~/utils/db.server';
 
 import { login, createUserSession } from '~/utils/session.server';
 import { badRequest } from '~/utils/request.server';
@@ -31,34 +24,16 @@ function isNullOrEmpty(value: FormDataEntryValue | null): boolean {
 }
 
 async function isValidCaptcha(captchaValue: FormDataEntryValue | null): Promise<boolean> {
-  
-  // console.log("Secret value: " + process.env["HCAPTCHA_SECRET"])
-  // const response = await fetch('https://hcaptcha.com/siteverify',
-  //     {method: 'POST', headers: {
-  //       'Content-Type': 'application/x-www-form-urlencoded'
-  //     },
-  //     body: `response=${captchaValue}&secret=${process.env["HCAPTCHA_SECRET"]}`});
-
-  //   const responseJson = await response.json();
-
-  //   console.log(responseJson);
-
-  //   return responseJson.success;
   const formData = new FormData();
   formData.append('secret', process.env["TURNSTILE_SECRET"]);
   formData.append('response', captchaValue?.toString());
 
-  console.log("Send it!")
   const initialResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
     method: 'POST',
-    body: formData, // Pass the FormData object as the request body
+    body: formData,
   });
 
   const jsonResponse = await initialResponse.json();
-
-
-  console.log("Result:");
-  console.log(jsonResponse)
 
   return jsonResponse.success;
 }
@@ -71,23 +46,14 @@ export const action = async ({ request }: ActionArgs) => {
     const emailAddress = form.get('email_address');
     const password = form.get('password');
     const confirmPassword = form.get('confirm_password');
-    // const clientResponse = form.get("client_response")
     const turnstileResponse = form.get('cf-turnstile-response');
 
-    console.log(firstName)
-    console.log(lastName)
-    console.log(emailAddress)
-    console.log(password)
-    console.log(confirmPassword)
-    // console.log(clientResponse);
-    console.log(turnstileResponse)
-
-    // if (isNullOrEmpty(firstName) || isNullOrEmpty(lastName) || isNullOrEmpty(emailAddress) || isNullOrEmpty(password) || isNullOrEmpty(confirmPassword) || isNullOrEmpty(clientResponse)) {
-    //   return badRequest({
-    //     missingInfo: true,
-    //     incorrectCaptcha: false
-    //   });
-    // }
+    if (isNullOrEmpty(firstName) || isNullOrEmpty(lastName) || isNullOrEmpty(emailAddress) || isNullOrEmpty(password) || isNullOrEmpty(confirmPassword) || isNullOrEmpty(turnstileResponse)) {
+      return badRequest({
+        missingInfo: true,
+        incorrectCaptcha: false
+      });
+    }
 
     if (await isValidCaptcha(turnstileResponse) == false) {
       return badRequest({

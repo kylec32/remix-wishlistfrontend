@@ -50,21 +50,4 @@ async function sendMessage(messageInfo: any) {
     let result = await fetch('https://api.mailjet.com/v3.1/send', {method: 'post', headers:{
         'authorization': 'Basic ' + Buffer.from(EMAIL_USER + ":" + EMAIL_PASSWORD).toString('base64')
     }, body: JSON.stringify(messageInfo)});
-    console.log(result);
-
-    // return new Promise((resolve, reject) => {
-    //     request.post('https://api.mailjet.com/v3.1/send', {
-    //         'auth': {
-    //             'user': '30a23f52f366cf26048627a52171dbc4',
-    //             'password': process.env.MAILGUN_API_KEY
-    //         },
-    //         'body': JSON.stringify(messageInfo)
-    //     }, (error: any, response: request.Response, body: any) => {
-    //         if(error) {
-    //             reject(error);
-    //         }
-
-    //         resolve(body);
-    //     });
-    // });
 }

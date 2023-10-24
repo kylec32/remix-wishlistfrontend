@@ -24,6 +24,26 @@ export async function createUser(firstName: string, lastName: string, emailAdres
   }
 }
 
+export async function updateUserPassword(emailAdress: string, newPassword: string) {
+  const passwordHash = await bcrypt.hash(`${emailAdress.toLowerCase()}_${newPassword}`, 10);
+
+  try {
+    await db.user.update({
+      where: {
+        email_address: emailAdress
+      }, 
+      data: {
+        password_hash: passwordHash
+      }
+    });
+  } catch(exception) {
+    console.error(exception);
+    throw badRequest({
+      message: 'Issuce occured resetting password'
+    });
+  }
+}
+
 export async function searchForUser(searchCriteria: string, requestingUserId: string) {
     const followingUsers = await db.follows.findMany({
         where: {
