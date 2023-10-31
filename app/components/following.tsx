@@ -18,13 +18,11 @@ import type { FollowedPerson } from '~/models/followedPerson';
 import React, { ChangeEvent } from 'react';
 
 type FollowingListProps = {
-    onDelete: (userId: string) => void;
     onFollowerSelected: (userId: string) => void;
-    findNewFollower: () => void;
     following: FollowedPerson[]
 }
 
-const FollowingList: React.FC<FollowingListProps> = ({onDelete, onFollowerSelected, findNewFollower, following}) => {
+const FollowingList: React.FC<FollowingListProps> = ({onFollowerSelected, following}) => {
     const [collapsed, setCollapsed] = React.useState(true);
     const [open, setOpen] = React.useState(false);
     const [searchCriteria, setSearchCriteria] = React.useState('');
@@ -91,19 +89,17 @@ const FollowingList: React.FC<FollowingListProps> = ({onDelete, onFollowerSelect
                     return (<ListItem disablePadding key={followingUserSearchResult.id} >
                         <Form action="/add-user" method='POST' onSubmit={handleClose}>
                             <input type='hidden' name='userIdToFollow' value={followingUserSearchResult.id}/>
-                            {/* <button type='submit'> */}
                             <ListItemButton type="submit" component="button" disabled={navigation.state === "submitting"}>
                                 <ListItemText primary={followingUserSearchResult.first_name + ' ' + followingUserSearchResult.last_name}
                                             secondary={followingUserSearchResult.email_address} />
                             </ListItemButton>
-                            {/* </button> */}
                         </Form>
                     </ListItem>)
                     })}
                 </List>
             </DialogContent>
         </Dialog>
-        <Card sx={{ minWidth: 275, width: '40%', marginLeft: 'auto', marginRight: 'auto', marginTop: '20px' }}>
+        <Card sx={{ minWidth: 275, width: '92%', marginLeft: 'auto', marginRight: 'auto', marginTop: '20px' }}>
             <CardHeader title="Following" action={
                 <span>
                 <Button variant="outlined" onClick={handleClickOpen}>New</Button>

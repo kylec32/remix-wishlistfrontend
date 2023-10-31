@@ -44,16 +44,11 @@ export const loader = async ({ request }: LoaderArgs) => {
 export default function List() {
   const navigation = useNavigation();
   const data = useLoaderData<typeof loader>();
-    function handleDelete(userId: string) {
-        alert('Delete Called: ' + userId)
-    }
 
     function handleFollowerSelection(userId: string) {
-        alert('Follower selected: ' + userId);
+        document.getElementById(userId + '-list')?.scrollIntoView();
     }
 
-    function findNewFollower() {
-    }
   return (
     <div>
       
@@ -76,15 +71,18 @@ export default function List() {
         </Form>
       </Toolbar>
       </AppBar>
+      <div className="wrapper">
+        <MyList ideas={data.requesterGifts}/>
+        <FollowingList onFollowerSelected={handleFollowerSelection}
+                          following={data.followingUserInfo}></FollowingList>
+        
         {data.followedUserGifts
               .map((followedUserInfo: any) => {
                     return (<PersonIdeas key={followedUserInfo.name} personData={followedUserInfo}/>)
         })}
-        <MyList ideas={data.requesterGifts}/>
-        <FollowingList findNewFollower={findNewFollower}
-                        onFollowerSelected={handleFollowerSelection}
-                        onDelete={handleDelete}
-                        following={data.followingUserInfo}></FollowingList>
+        
+        
+      </div>
       
     </div>
   );

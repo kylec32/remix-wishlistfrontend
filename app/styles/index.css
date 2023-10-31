@@ -38,6 +38,10 @@ body {
     grid-column: span 2;
 }
 
+.max-width {
+    width: 92%;
+}
+
 @media (max-width: 800px) {
     .wrapper {
         display: grid;

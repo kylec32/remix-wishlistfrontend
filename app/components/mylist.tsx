@@ -99,7 +99,7 @@ const MyList: React.FC<MyListProps> = ({ideas}) => {
                     </DialogActions>
                 </Form>
             </Dialog>
-            <Card sx={{ minWidth: 275, width: '40%', marginLeft: 'auto', marginRight: 'auto', marginTop: '20px' }}>
+            <Card sx={{ minWidth: 275, width: '95%', marginLeft: 'auto', marginRight: 'auto', marginTop: '20px' }}>
                 <CardHeader title="My List" action={
                     <span>
                     <a onClick={handleCollapsed}><img src={collapsed ? 'chevron-up.svg' : 'chevron-down.svg'}/></a>

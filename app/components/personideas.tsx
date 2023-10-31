@@ -54,7 +54,7 @@ const PersonIdeas: React.FC<MyListProps> = ({personData}) => {
     }
 
     return (
-        <Card sx={{ minWidth: 275, width: '60%', marginLeft: 'auto', marginRight: 'auto', marginTop: '20px' }}>
+        <Card sx={{ minWidth: 275, width: '92%', marginLeft: 'auto', marginRight: 'auto', marginTop: '20px' }} className='all-column-width' id={personData.id + '-list'}>
             <CardHeader title={personData.name} action={
                 <span>
                 <a onClick={handleCollapsed}><img src={collapsed ? 'chevron-up.svg' : 'chevron-down.svg'}/></a>

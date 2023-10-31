@@ -28,25 +28,18 @@ export const action = async ({ request }: ActionArgs) => {
   const token = form.get("token");
   const email = form.get("email");
 
-  console.log(`password ${password}`)
-  console.log(`confirmPassword ${confirmPassword}`)
-  console.log(`token ${token}`)
-  console.log(`email ${email}`)
-
   const secret = new TextEncoder().encode(
     process.env['JWT_PASSWORD']
   )
 
   const { payload } = await jose.jwtVerify(token, secret);
   if (payload.sub !== email) {
-    console.log('Password does not match')
     return badRequest({
       tokenDidntMatch: true,
     });
   }
 
   await updateUserPassword(email, password);
-  console.log('Password updated')
 
   const userData = await login({ username: email, password });
 

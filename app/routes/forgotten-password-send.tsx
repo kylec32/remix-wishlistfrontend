@@ -29,7 +29,7 @@ export const action = async ({ request }: ActionArgs) => {
 
     console.log(token);
     
-    const resetUrl = `https://wishlistsharer.tk/reset/${emailAddress}/${token}`;
+    const resetUrl = `https://wishlistsharer.scaledcode.com/reset/${emailAddress}/${token}`;
 
     await sendHtmlMessage(emailAddress,
                           'Forgotten Password: WishListSharer',

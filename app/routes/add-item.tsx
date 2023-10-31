@@ -1,7 +1,9 @@
 import { redirect, V2_MetaFunction } from "@remix-run/node";
 import type { LinksFunction, ActionArgs } from "@remix-run/node";
 import { requireUserId, getUserIdFromSession } from "~/utils/session.server";
+import { getUsersFollowers, getUserById } from "~/utils/user-service.server";
 import { db } from '~/utils/db.server';
+import { sendHtmlMessage } from '~/utils/email.service.server';
 
 import stylesUrl from "~/styles/index.css";
 
@@ -30,6 +32,27 @@ export const action = async ({ request }: ActionArgs) => {
             requestingUserId: requestUserId
         }
     });
+
+    const followerInfo = await getUsersFollowers(requestUserId);
+    const requesterInfo = await getUserById(requestUserId);
+
+    let presentLink = '';
+    if (link !== undefined && link.length > 0) {
+        presentLink = `<a href="${link}">${name}</a>`
+    } else {
+        presentLink = name;
+    }
+
+    for (let follower of followerInfo) {
+      console.log(`Notifying ${follower.email_address}`);
+
+      sendHtmlMessage(follower.email_address, 'New Wish List Item for Person You Follow', `
+      ${requesterInfo?.first_name} ${requesterInfo?.last_name} just added a new gift to their list!
+      <br/>
+      <br/>
+      New Item: ${presentLink}
+        `);
+    }
 
     return redirect('/list');
   };

@@ -44,6 +44,32 @@ export async function updateUserPassword(emailAdress: string, newPassword: strin
   }
 }
 
+export async function getUsersFollowers(userId: string) {
+  const followers = await db.follows.findMany({
+    where: {
+      followingId: userId
+    }
+  });
+
+  const followerIds = followers.map(follower => follower.followerId)
+
+  return await db.user.findMany({
+    where: {
+      id: {
+        in: followerIds
+      }
+    }
+  })
+}
+
+export async function getUserById(userId: string) {
+  return await db.user.findUnique({
+    where: {
+      id: userId
+    }
+  });
+}
+
 export async function searchForUser(searchCriteria: string, requestingUserId: string) {
     const followingUsers = await db.follows.findMany({
         where: {
