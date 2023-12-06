@@ -8,7 +8,8 @@
     "start": "netlify serve",
     "typecheck": "tsc -b",
     "redirects:enable": "shx cp .redirects public/_redirects",
-    "redirects:disable": "shx rm -f public/_redirects"
+    "redirects:disable": "shx rm -f public/_redirects",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@netlify/functions": "^2.0.0",
