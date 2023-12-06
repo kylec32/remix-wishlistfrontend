@@ -1,17 +1,14 @@
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardContent from '@mui/material/CardContent';
-import { TextField } from '@mui/material';
-import Button from '@mui/material/Button';
+import type { ActionFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { LinksFunction } from "@remix-run/node";
+import { CardHeader, Card, CardContent, TextField, Button } from '@mui/material';
 
-import type { ActionArgs } from "@remix-run/node";
-import type { LoaderArgs, LoaderFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react"
 import { json } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import type { LinksFunction } from "@remix-run/node";
+
 import * as jose from 'jose'
-import React, { ChangeEvent, useEffect } from 'react';
+import React from 'react';
 import { badRequest } from '~/utils/request.server';
 import { login, createUserSession } from '~/utils/session.server';
 import { updateUserPassword } from '~/utils/user-service.server';
@@ -21,7 +18,7 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesUrl },
 ];
 
-export const action = async ({ request }: ActionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   const form = await request.formData();
   const password = form.get("password");
   const confirmPassword = form.get("confirmPassword");
@@ -54,7 +51,7 @@ export const action = async ({ request }: ActionArgs) => {
   }
 };
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
     console.log('Args');
     console.log(params);
     

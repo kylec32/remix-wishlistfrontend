@@ -1,17 +1,5 @@
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardContent from '@mui/material/CardContent';
-import { Collapse, TextField } from '@mui/material';
-import Button from '@mui/material/Button';
-
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-
-import type { FollowedPerson } from '~/models/followedPerson';
-import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
+import { Collapse, CardHeader, Card, CardContent, Button, List, ListItem, ListItemButton, ListItemText } from '@mui/material';
+import { Form } from "@remix-run/react";
 import React from 'react';
 
 type MyListProps = {

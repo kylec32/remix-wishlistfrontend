@@ -1,10 +1,6 @@
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardContent from '@mui/material/CardContent';
-import { TextField } from '@mui/material';
-import Button from '@mui/material/Button';
 import type { LinksFunction } from "@remix-run/node";
-import type { ActionArgs } from "@remix-run/node";
+import type { ActionFunctionArgs } from "@remix-run/node";
+import { Card, CardContent, CardHeader, TextField, Button } from '@mui/material';
 import { useSearchParams,  useActionData } from '@remix-run/react';
 
 import { login, createUserSession } from '~/utils/session.server';
@@ -38,7 +34,7 @@ async function isValidCaptcha(captchaValue: FormDataEntryValue | null): Promise<
   return jsonResponse.success;
 }
 
-export const action = async ({ request }: ActionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
     const form = await request.formData();
 
     const firstName = form.get('first_name');
@@ -73,34 +69,33 @@ export default function Login() {
     const actionData = useActionData<typeof action>();
 
     const [searchParams] = useSearchParams();
-    const [clientResponse, setClientResponse] = React.useState('');
     const [firstName, setFirstName] = React.useState('');
     const [lastName, setLastName] = React.useState('');
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [confirmPassword, setConfirmPassword] = React.useState('');
 
-    function handleVerificationSuccess(token: string) {
-        setClientResponse(token);
-    }
-
     function isSubmitable() {
-        //return firstName.length > 0 && lastName.length > 0 && email.length > 0 && password.length > 0 && password === confirmPassword;
-        return true;
+        return firstName.length > 0 && lastName.length > 0 && email.length > 0 && password.length > 0 && password === confirmPassword;
     }
 
     useEffect(() => {
-      // Your JavaScript code to execute when the page loads on the client side
-      console.log("Page loaded on the client side!");
-      turnstile.render('#turnstileElement', {
-        sitekey: '0x4AAAAAAALWDmavHg-cZ360',
-        callback: function(token) {
-            console.log(`Challenge Success ${token}`);
-        },
-    });
-      
-      // You can add any other client-side code here
+      tryLoadTurnstile();
     }, []);
+
+    function tryLoadTurnstile() {
+      if (turnstile == undefined) {
+        console.log('Turnstile was not available');
+        setTimeout(tryLoadTurnstile, 250);
+      } else {
+        turnstile.render('#turnstileElement', {
+          sitekey: '0x4AAAAAAALWDmavHg-cZ360',
+          callback: function(token) {
+              console.log(`Challenge Success ${token}`);
+          },
+      });
+      }
+    }
 
     return (
         <form method="post">
@@ -135,7 +130,6 @@ export default function Login() {
                     searchParams.get("redirectTo") ?? undefined
                     }
                 />
-                <input type="hidden" name="client_response" value={clientResponse}/>
                 <TextField id="first-name" name='first_name' value={firstName} onChange={(event) => setFirstName(event.target.value)} label="First Name" variant="standard" sx={{ width: '90%', marginLeft: 'auto', marginRight: 'auto'}}/><br/><br/>
                 <TextField id="last-name" name='last_name' value={lastName} onChange={(event) => setLastName(event.target.value)} label="Last Name" variant="standard" sx={{ width: '90%', marginLeft: 'auto', marginRight: 'auto'}}/><br/><br/>
                 <TextField id="email-address" name='email_address' value={email} onChange={(event) => setEmail(event.target.value)} label="Email Address" variant="standard" sx={{ width: '90%', marginLeft: 'auto', marginRight: 'auto'}}/><br/><br/>
@@ -150,10 +144,6 @@ export default function Login() {
                     </div>
                 }
 
-                {/* <HCaptcha
-                sitekey="02e7de08-73fc-4463-a9ce-ea7e0371f043"
-                onVerify={(token,ekey) => handleVerificationSuccess(token)}
-                /> */}
                 <div id="turnstileElement" className="cf-turnstile" data-sitekey="0x4AAAAAAALWDmavHg-cZ360"></div>
                 <div style={{marginTop: '25px'}}>
                     <Button variant="outlined" sx={{marginRight: '10px'}}>Back to Login</Button>

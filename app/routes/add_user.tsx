@@ -1,11 +1,7 @@
-import { redirect, V2_MetaFunction } from "@remix-run/node";
-import type { LinksFunction, ActionArgs } from "@remix-run/node";
-import type { LoaderArgs } from "@remix-run/node";
-import { Link, Outlet, useLoaderData } from "@remix-run/react";
-import { login, createUserSession } from '~/utils/session.server';
-import { badRequest } from '~/utils/request.server';
+import { MetaFunction } from "@remix-run/node";
+import type { LinksFunction, ActionFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { requireUserId, getUserIdFromSession } from "~/utils/session.server";
+import { requireUserId } from "~/utils/session.server";
 import { db } from '~/utils/db.server';
 
 import stylesUrl from "~/styles/index.css";
@@ -14,11 +10,11 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesUrl },
 ];
 
-export const meta: V2_MetaFunction = () => {
-  return [{ title: "New Remix App" }];
+export const meta: MetaFunction = () => {
+  return [{ title: "Wishlist Sharer" }];
 };
 
-export const action = async ({ request }: ActionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
     const requestBody = await request.json();
     console.log(requestBody);
     const userIdToFollow = requestBody.userToFollow;

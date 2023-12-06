@@ -1,14 +1,11 @@
-import { json, redirect } from "@remix-run/node";
-import type { ActionArgs } from "@remix-run/node";
-import { requireUserId } from "~/utils/session.server";
+import type { ActionFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
 
 import { sendHtmlMessage } from '~/utils/email.service.server';
 
-import { updatePresent } from '~/utils/gift-service.server';
-import { badRequest } from "~/utils/request.server";
 import * as jose from 'jose'
 
-export const action = async ({ request }: ActionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
     const body = await request.json();
 
     console.log(body);

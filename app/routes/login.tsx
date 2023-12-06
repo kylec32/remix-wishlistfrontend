@@ -1,12 +1,6 @@
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardContent from '@mui/material/CardContent';
-import { TextField } from '@mui/material';
-import Button from '@mui/material/Button';
-import Snackbar from '@mui/material/Snackbar';
-import Alert, { AlertColor } from '@mui/material/Alert';
 import type { LinksFunction } from "@remix-run/node";
-import type { ActionArgs } from "@remix-run/node";
+import type { ActionFunctionArgs } from "@remix-run/node";
+import { CardHeader, Card, CardContent, TextField, Button, Snackbar, Alert, AlertColor } from '@mui/material';
 import { useNavigation, Form } from "@remix-run/react";
 import { useSearchParams,  useActionData, Link } from '@remix-run/react';
 
@@ -21,7 +15,7 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesUrl },
 ];
 
-export const action = async ({ request }: ActionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
     const form = await request.formData();
     const username = form.get("username");
     const password = form.get("password");

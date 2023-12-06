@@ -1,13 +1,8 @@
-import type { V2_MetaFunction } from "@remix-run/node";
-import type { LoaderArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import type { MetaFunction } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 import type { LinksFunction } from "@remix-run/node";
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import AppBar from '@mui/material/AppBar';
-import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
-import LinearProgress from '@mui/material/LinearProgress';
+import { json } from "@remix-run/node";
+import { Toolbar, Typography, AppBar, Button, LinearProgress } from '@mui/material';
 import { Form, useLoaderData, useNavigation } from "@remix-run/react";
 import FollowingList from "~/components/following";
 import MyList from "~/components/mylist";
@@ -23,11 +18,11 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesUrl },
 ];
 
-export const meta: V2_MetaFunction = () => {
-  return [{ title: "New Remix App" }];
+export const meta: MetaFunction = () => {
+  return [{ title: "Wishlist Sharer" }];
 };
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request);
 
   // Following Users  

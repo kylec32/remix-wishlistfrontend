@@ -1,13 +1,12 @@
+import type { ActionFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import type { ActionArgs } from "@remix-run/node";
 import { requireUserId } from "~/utils/session.server";
 
 import { updatePresent, getRequesterInfo, getPurchaserUserInfo } from '~/utils/gift-service.server';
-import { getUserById } from '~/utils/user-service.server'
 import { sendHtmlMessage } from '~/utils/email.service.server';
 import { badRequest } from "~/utils/request.server";
 
-export const action = async ({ request }: ActionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
     const form = await request.formData();
     const presentId = form.get('presentId');
     const name = form.get('name');

@@ -1,12 +1,10 @@
-import { json } from "@remix-run/node";
-import type { LoaderArgs, LoaderFunction } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 import { badRequest } from "~/utils/request.server";
 
 import { searchForUser } from '~/utils/user-service.server';
 import { requireUserId } from "~/utils/session.server";
-import invariant from "tiny-invariant";
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const requestUserId = await requireUserId(request);
   const searchParams = new URL(request.url).searchParams;
   const filter = searchParams.get('filter');

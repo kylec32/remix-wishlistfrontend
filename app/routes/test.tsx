@@ -1,4 +1,4 @@
-import type { V2_MetaFunction } from "@remix-run/node";
+import type { MetaFunction } from "@remix-run/node";
 import type { LinksFunction } from "@remix-run/node";
 import { Link, Outlet, useLoaderData } from "@remix-run/react";
 
@@ -8,8 +8,8 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesUrl },
 ];
 
-export const meta: V2_MetaFunction = () => {
-  return [{ title: "New Remix App" }];
+export const meta: MetaFunction = () => {
+  return [{ title: "Wishlist Sharer" }];
 };
 
 export default function TestPage() {

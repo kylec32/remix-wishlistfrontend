@@ -1,9 +1,9 @@
+import type { ActionFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import type { ActionArgs } from "@remix-run/node";
 import { requireUserId } from "~/utils/session.server";
 import { db } from '~/utils/db.server';
 
-export const action = async ({ request }: ActionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
     const form = await request.formData();
     const userIdToRemove = form.get('userIdToRemove')
     const requestUserId = await requireUserId(request);

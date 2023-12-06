@@ -1,6 +1,7 @@
-import type { V2_MetaFunction } from "@remix-run/node";
+import type { MetaFunction } from "@remix-run/node";
 import type { LinksFunction } from "@remix-run/node";
-import { Link, Outlet, useLoaderData } from "@remix-run/react";
+import { Link } from "@remix-run/react";
+import { Button } from '@mui/material';
 
 import stylesUrl from "~/styles/index.css";
 
@@ -8,8 +9,8 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesUrl },
 ];
 
-export const meta: V2_MetaFunction = () => {
-  return [{ title: "New Remix App" }];
+export const meta: MetaFunction = () => {
+  return [{ title: "Wishlist Sharer" }];
 };
 
 export default function Index() {
@@ -44,7 +45,7 @@ export default function Index() {
       <br/>
       <br/>
       <Link to='/signup'>
-        <button mat-raised-button="true" >Sign Up</button>
+        <Button variant="contained">Sign Up</Button>
       </Link>
       <br/>
       <br/>
