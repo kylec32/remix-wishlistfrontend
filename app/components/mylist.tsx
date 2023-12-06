@@ -48,6 +48,16 @@ const MyList: React.FC<MyListProps> = ({ideas}) => {
         }
     }
 
+    function hasValidLink(): boolean {
+        const urlPattern = /\b(?:https?):\/\/(?:(?:[a-z0-9]+(?:-[a-z0-9]+)*\.)+[a-z]{2,}|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?::\d+)?(?:\/\S*)?\b/i;
+
+        return presentLink.length === 0 || presentLink.match(urlPattern) !== null;
+    }
+
+    function canSave(): boolean {
+        return presentName.length > 0 && hasValidLink();
+    }
+
     return (
         <span>
             <Dialog open={open} onClose={handleClose}>
@@ -77,10 +87,18 @@ const MyList: React.FC<MyListProps> = ({ideas}) => {
                             onChange={e => setPresentLink(e.target.value)}
                         />
                         <input name="presentId" type="hidden" value={presentId} />
+                        {
+                            !hasValidLink() &&
+                            <div style={{fontSize: 12 + 'px', color: 'red'}}>
+                                Link does not appear to be a valid link
+                                <br/>
+                                <br/>
+                            </div>
+                        }
                     </DialogContent>
                     <DialogActions>
                         <Button type="reset" onClick={handleClose}>Cancel</Button>
-                        <Button type="submit">Save</Button>
+                        <Button type="submit" disabled={!canSave()}>Save</Button>
                     </DialogActions>
                 </Form>
             </Dialog>
