@@ -1,14 +1,14 @@
-import type { LinksFunction } from "@remix-run/node";
-import type { ActionFunctionArgs } from "@remix-run/node";
+import type { LinksFunction } from "react-router";
+import type { ActionFunctionArgs } from "react-router";
 import { Card, CardContent, CardHeader, TextField, Button } from '@mui/material';
-import { useSearchParams,  useActionData } from '@remix-run/react';
+import { useSearchParams,  useActionData } from 'react-router';
 
 import { login, createUserSession } from '~/utils/session.server';
 import { badRequest } from '~/utils/request.server';
 import { createUser } from '~/utils/user-service.server';
 import { sendTextMessage } from '~/utils/email.service.server';
 
-import stylesUrl from "~/styles/index.css";
+import stylesUrl from "~/styles/index.css?url";
 import React, { ChangeEvent, useEffect } from 'react';
 
 export const links: LinksFunction = () => [

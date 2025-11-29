@@ -1,6 +1,6 @@
 import { CardHeader, Card, CardContent, Collapse, TextField, Button, Dialog, DialogContent, DialogTitle, List, ListItem, ListItemButton, ListItemText } from '@mui/material';
 
-import { Form, useNavigation } from "@remix-run/react";
+import { Form, useNavigation } from "react-router";
 
 import type { FollowedPerson } from '~/models/followedPerson';
 import React, { ChangeEvent } from 'react';

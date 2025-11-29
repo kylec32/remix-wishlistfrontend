@@ -1,5 +1,5 @@
-import type { ActionFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import type { ActionFunctionArgs } from "react-router";
+import { json } from "react-router";
 
 import { sendHtmlMessage } from '~/utils/email.service.server';
 

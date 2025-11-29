@@ -1,14 +1,14 @@
-import type { MetaFunction } from "@remix-run/node";
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import type { LinksFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import type { MetaFunction } from "react-router";
+import type { LoaderFunctionArgs } from "react-router";
+import type { LinksFunction } from "react-router";
+import { json } from "react-router";
 import { Toolbar, Typography, AppBar, Button, LinearProgress } from '@mui/material';
-import { Form, useLoaderData, useNavigation } from "@remix-run/react";
+import { Form, useLoaderData, useNavigation } from "react-router";
 import FollowingList from "~/components/following";
 import MyList from "~/components/mylist";
 import PersonIdeas from "~/components/personideas";
 
-import stylesUrl from "~/styles/index.css";
+import stylesUrl from "~/styles/index.css?url";
 
 import { requireUserId } from "~/utils/session.server";
 import { getUserGifts, getGiftsForRequestedUsers } from "~/utils/gift-service.server";

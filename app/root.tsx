@@ -1,13 +1,12 @@
-import type { LinksFunction } from "@remix-run/node";
+import type { LinksFunction } from "react-router";
 import {
   Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
   useMatches
-} from "@remix-run/react";
+} from "react-router";
 
 export const links: LinksFunction = () => [];
 
@@ -28,7 +27,6 @@ export default function App() {
         <Scripts />
         {/* Look into remix-utils ExternalScripts */}
         {isOnSignup && <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>}
-        <LiveReload />
       </body>
     </html>
   );

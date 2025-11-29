@@ -1,11 +1,11 @@
-import type { ActionFunctionArgs } from "@remix-run/node";
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import type { LinksFunction } from "@remix-run/node";
+import type { ActionFunctionArgs } from "react-router";
+import type { LoaderFunctionArgs } from "react-router";
+import type { LinksFunction } from "react-router";
 import { CardHeader, Card, CardContent, TextField, Button } from '@mui/material';
 
-import { useLoaderData } from "@remix-run/react"
-import { json } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
+import { useLoaderData } from "react-router"
+import { json } from "react-router";
+import { redirect } from "react-router";
 
 import * as jose from 'jose'
 import React from 'react';
@@ -13,7 +13,7 @@ import { badRequest } from '~/utils/request.server';
 import { login, createUserSession } from '~/utils/session.server';
 import { updateUserPassword } from '~/utils/user-service.server';
 
-import stylesUrl from "~/styles/index.css";
+import stylesUrl from "~/styles/index.css?url";
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesUrl },
 ];

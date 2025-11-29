@@ -3,36 +3,37 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "npm run redirects:enable && remix build",
-    "dev": "npm run redirects:disable && remix dev",
+    "build": "npm run redirects:enable && react-router build",
+    "dev": "npm run redirects:disable && react-router dev",
     "start": "netlify serve",
-    "typecheck": "tsc -b",
+    "typecheck": "react-router typegen && tsc -b",
     "redirects:enable": "shx cp .redirects public/_redirects",
     "redirects:disable": "shx rm -f public/_redirects",
     "postinstall": "prisma generate"
   },
   "dependencies": {
-    "@netlify/functions": "^2.0.0",
-    "@netlify/remix-adapter": "^2.7.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.14.12",
+    "@netlify/functions": "^2.0.0",
     "@prisma/client": "^5.4.1",
-    "@remix-run/node": "^2.17.2",
-    "@remix-run/react": "^2.17.2",
-    "@remix-run/serve": "^2.17.2",
+    "@react-router/node": "^7.9.6",
+    "@react-router/remix-routes-option-adapter": "^7.9.6",
+    "@react-router/serve": "^7.9.6",
     "bcryptjs": "^2.4.3",
     "isbot": "^5.1.32",
     "jose": "^4.15.2",
     "jsonwebtoken": "^9.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "tiny-invariant": "^1.3.1",
-    "shx": "^0.3.4"
+    "react-router": "^7.9.6",
+    "remix-flat-routes": "^0.8.5",
+    "shx": "^0.3.4",
+    "tiny-invariant": "^1.3.1"
   },
   "devDependencies": {
-    "@remix-run/dev": "^2.17.2",
-    "@remix-run/eslint-config": "^2.17.2",
+    "@netlify/vite-plugin-react-router": "^2.1.2",
+    "@react-router/dev": "^7.9.6",
     "@types/bcryptjs": "^2.4.2",
     "@types/react": "^18.0.35",
     "@types/react-dom": "^18.0.11",
@@ -40,7 +41,9 @@
     "prisma": "^5.4.1",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "vite": "^6.0.7",
+    "vite-tsconfig-paths": "^5.1.4"
   },
   "engines": {
     "node": ">=14"

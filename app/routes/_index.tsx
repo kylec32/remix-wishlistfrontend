@@ -1,9 +1,9 @@
-import type { MetaFunction } from "@remix-run/node";
-import type { LinksFunction } from "@remix-run/node";
-import { Link } from "@remix-run/react";
+import type { MetaFunction } from "react-router";
+import type { LinksFunction } from "react-router";
+import { Link } from "react-router";
 import { Button } from '@mui/material';
 
-import stylesUrl from "~/styles/index.css";
+import stylesUrl from "~/styles/index.css?url";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesUrl },

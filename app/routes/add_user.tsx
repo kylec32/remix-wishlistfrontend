@@ -1,10 +1,10 @@
-import { MetaFunction } from "@remix-run/node";
-import type { LinksFunction, ActionFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import { MetaFunction } from "react-router";
+import type { LinksFunction, ActionFunctionArgs } from "react-router";
+import { json } from "react-router";
 import { requireUserId } from "~/utils/session.server";
 import { db } from '~/utils/db.server';
 
-import stylesUrl from "~/styles/index.css";
+import stylesUrl from "~/styles/index.css?url";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesUrl },

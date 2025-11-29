@@ -1,4 +1,4 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "react-router";
 import { badRequest } from "~/utils/request.server";
 
 import { searchForUser } from '~/utils/user-service.server';

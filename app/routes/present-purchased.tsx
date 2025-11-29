@@ -1,11 +1,11 @@
-import { redirect, MetaFunction } from "@remix-run/node";
-import type { LinksFunction, ActionFunctionArgs, LoaderFunction } from "@remix-run/node";
+import { redirect, MetaFunction } from "react-router";
+import type { LinksFunction, ActionFunctionArgs, LoaderFunction } from "react-router";
 import { requireUserId } from "~/utils/session.server";
 import { markPresentAsPurchased, unmarkPresentAsPurchased, getRequesterInfo, getPresentById } from '~/utils/gift-service.server';
 import { getUsersFollowers, getUserById } from "~/utils/user-service.server";
 import { sendHtmlMessage } from '~/utils/email.service.server';
 
-import stylesUrl from "~/styles/index.css";
+import stylesUrl from "~/styles/index.css?url";
 import { badRequest } from "~/utils/request.server";
 
 export const links: LinksFunction = () => [
